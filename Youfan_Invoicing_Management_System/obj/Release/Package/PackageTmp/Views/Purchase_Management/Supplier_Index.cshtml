@@ -1,0 +1,124 @@
+﻿
+@{
+    Layout = null;
+}
+
+@Styles.Render("~/Content/css")
+
+
+@* 操作按钮组批量删除、新增 *@
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <div class="layui-btn layui-btn-sm" id="addSupplier"><i class="layui-icon">&#xe61f;</i>添加供应商</div>
+        @*<div class="layui-btn layui-btn-sm" id="batchDel"><i class="layui-icon">&#xe640;</i>批量删除</div>*@
+    </div>
+</script>
+<div class="div-value-item">
+    <div class="item-child">
+        <table id='test2' lay-filter='test2'></table>
+    </div>
+</div>
+
+
+@Scripts.Render("~/bundles/layui")
+<script src="~/Scripts/jquery-3.5.1.js"></script>
+<script src="~/Content/src2.5.6/lay/opTable/opTable.js"></script>
+<script type="text/javascript">
+    function info() {
+    layui.config({
+        base: '/Content/src2.5.6/lay/opTable'
+    }).extend({
+        opTable: '/opTable'
+    }).use(['opTable'], function () {
+        layui.opTable.render({
+            elem: '#test2'
+            , id: '#test2'
+            , url: '/Purchase_Management/Get_Supplier_List'
+            , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+            // 不单独占一列
+            , isAloneColumn: true
+            // 第一列显示展开
+            , openColumnIndex: 0
+            , opOrientation: 'h'
+            , cols: [[
+                { field: 'supplier_id', title: '供应商编号', sort: true }
+                , { field: 'supplier_name', title: '供应商名称' }
+                , { field: 'address', title: '地址' }
+                , { field: 'contact', title: '联系人' }
+                , { field: 'tel', title: '联系电话' }
+            ]],
+            //  展开的列从网络加载
+            openNetwork: {
+                openCols: [
+                    { field: 'supplier_name', title: '供应商名称' }
+                    , { field: 'product_type_name', title: '商品类型' }
+                ],
+                /**
+                 *
+                 * param data 当前行数据 param message 显示异常消息[没有数据 出错 等]
+                 */
+                onNetwork: function (data, success, message) {
+                    console.log(data.address);
+                    console.log(data.contact);
+                    // 从网络加载
+                    layui.$.ajax({
+                        type: "get",
+                        url: "/Purchase_Management/Get_Supplier_Type_List",
+                        dataType: "json",
+                        async: true,
+                        success: function (resp) {
+                            if (resp.code === 0) {
+                                setTimeout(function () {
+                                    if (data.id === 10000) {
+                                        message("加载出错");
+                                    } else {
+                                        $.each(resp.data, function (index, item) {
+                                            if (data.supplier_name == item.supplier_name) {
+                                                success(item);
+                                            }
+                                        })
+                                    }
+                                }, 50);
+                            } else {
+                                message("没有数据");
+                            }
+                        },
+                        error: function (err) {
+                            message("加载出错");
+                        }
+                    });
+                }
+            }
+            , onSort: function (obj) {
+                console.log(obj)
+            }
+            , opOrientation: 'h'
+        });
+
+
+            //新增按钮
+            $(document).on("click", "#addSupplier", function (event) {
+                layer.open({
+                    type: 2,
+                    content: '@Url.Action("SupAdd")',
+                    title: "新增供应商信息",
+                    area: ["750px", "500px"],
+                    //btn: ['立即提交', '关闭'],
+                    end: function (index) {
+                        layer.close(layer.index);
+                        layer.close(index);
+                        //layui 关闭弹框时的回调函数
+                        //info();//刷新数据表格
+                        location.reload();
+
+                    }
+                })
+            });
+
+        setTimeout(function () {
+            layui.$('.layui-code-test2').text(layui.$('#layui-code-test2').html())
+        }, 20)
+    });
+    };
+    info();
+</script>

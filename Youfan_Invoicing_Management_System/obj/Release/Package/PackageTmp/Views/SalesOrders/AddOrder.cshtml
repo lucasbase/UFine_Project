@@ -1,0 +1,113 @@
+﻿
+@{
+    Layout = null;
+}
+<style>
+    .InfoLeft {
+        margin: 23px;
+        margin-top: 30px;
+        margin-right:20px
+    }
+
+    .SubInfo {
+        margin-top: 30px
+    }
+</style>
+@Styles.Render("~/Content/css")
+<div class="layui-form layui-form-pane1 InfoLeft" action="" lay-filter="first">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">订单号</label>
+        <div class="layui-input-inline">
+            <input type="text" name="order_num" placeholder="订单号自动生成" autocomplete="off" class="layui-input" readonly="readonly">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <!--员工角色类型-->
+        <label class="layui-form-label">商品名称</label>
+        <div class="layui-input-inline">
+            <select id="product_id" name="product_id" lay-verify="required" lay-filter="product" lay-search="">
+                <option value=""></option>
+                @foreach (var item in ViewBag.product_name as IEnumerable<SelectListItem>)
+                {
+                    
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">商品数量</label>
+        <div class="layui-input-inline">
+            <input type="text" name="total_num" lay-verify="total_num" lay-reqtext="请填写商品数量" placeholder="请输入商品数量" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item SubInfo">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="sub">立即提交</button>
+            <button onclick="parent.layer.closeAll()" class="layui-btn layui-btn-primary">关闭</button>
+        </div>
+    </div>
+
+</div>
+
+@Scripts.Render("~/bundles/layui")
+<script>
+            layui.use(['form', 'layedit', 'laydate'], function () {
+                var form = layui.form
+                layer = layui.layer,
+                layedit = layui.layedit,
+                laydate = layui.laydate,
+                    $ = layui.$;
+
+                //自定义验证规则
+                form.verify({
+                    total_num: [
+                        /^[0-9]*[1-9][0-9]{0,3}$/
+                        , '请输入正确的商品数量!'
+                    ]
+                });
+            form.on("submit(sub)", function (obj) {
+                var order_model = obj.field;
+                console.log(order_model);
+                var ii = layer.load(5);//此处用layui加载动画
+            $.ajax({
+                type: "POST",
+                data: {
+                    order_model: order_model
+                },
+                url: "@Url.Action("ADD")",
+                success: function (result) {
+                    layer.close(ii);//成功获取数据后关闭加载动画
+                    if (result.Success) {
+                        layer.msg(result.Message, {
+                            icon: 1,
+                            time: 3000
+                        });
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        parent.InitTable();//调用父级初始化数据表格的函数
+                        setTimeout(function () { layer.close(index) }, 300);//延迟
+                    }
+                    else {
+                        layer.msg(result.Message, {
+                            icon: 5,
+                            time: 3000
+                        }, function () {
+                            parent.location.reload();
+                        });
+                    }
+                },
+                error: function (error) {
+                    layer.close(ii);//成功获取数据后关闭加载动画
+                    layer.msg(error, {
+                        icon: 5,
+                        time: 2000
+                    });
+                }
+            })
+        })
+ })
+</script>

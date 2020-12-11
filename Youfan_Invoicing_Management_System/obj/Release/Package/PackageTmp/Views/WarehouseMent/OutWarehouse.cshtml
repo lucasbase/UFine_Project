@@ -1,0 +1,159 @@
+﻿
+@{
+    Layout = null;
+}
+
+@Styles.Render("~/Content/css")
+
+@* 搜索框 *@
+<div class="layui-inline" id="searchKeywordf">
+    <input type="text" autocomplete="off" id="KeyWords" name="KeyWords" placeholder="订单号/创建人/商品名称" class="layui-input">
+</div>
+<button class="layui-btn layui-btn-normal" lay-submit="" id="BlurSel" data-type="getInfo">
+    <i class="layui-icon">&#xe615;</i>查询
+</button>
+
+<table class="layui-hide" id="OutWareTable" lay-filter="jsTabel"></table>
+
+<script type="text/html" id="tbar">
+    <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="OutOrDetils"> 出库/详情</button>
+</script>
+
+@Scripts.Render("~/bundles/layui")
+<script src="~/Content/FormatTime.js"></script>
+<script>
+    function OutWTable() {
+        layui.use(['table'], function () {
+            var table = layui.table;
+            $ = layui.$;
+            layer = layui.layer;
+            table.render({
+                elem: '#OutWareTable'
+                , height: 482
+                , title: "出库订单表"
+                , url: "@Url.Action("DataOutWarehouse")"
+                , page: true
+                , celMinWidth: 80
+                , cols: [[
+                    {
+                        title: '序号', width: 80, align: 'center', templet: function (obj) {
+                            return obj.LAY_INDEX;
+                        }, fixed: 'left'
+                    },
+                    { title: '订单号', field: 'order_num', align: 'center', fixed: 'left' },
+                    { title: '订单创建人', field: 'creater', align: 'center' },
+                    {
+                        title: '创建时间', field: 'create_time', align: 'center',
+                        templet: function (d) {
+                            return formatTime(d.create_time);
+                        }
+                    },
+                    { title: '商品名称', field: 'product_name', align: 'center' },
+                    { title: '订单商品总数', field: 'total_num', align: 'center' },
+                    {
+                        title: '订单商品总价', field: 'total_price', align: 'center', templet: function (price) {
+                            if (price.total_price == null) {
+
+                                return ' ';
+                            }
+                            return price.total_price + ' 元';
+                        }
+                    },
+                    {
+                        title: '订单状态', field: 'order_state', align: 'center', templet: function (obj) {
+                            if (obj.order_state) {
+                                return "<span style='color:green'>已出库</span>";
+                            }
+                            else {
+                                return "<span style='color:red'>等待出库</span>";
+                            }
+                        }
+                    },
+                    { title: '操作', fixed: 'right', align: 'center', width: 80, toolbar: "#tbar" }
+                ]]
+                , skin: 'row'
+                , even: true
+                , limit: 10
+            });
+
+            @* 模糊查询按钮 *@
+            $(document).on('click', "#BlurSel", function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+            //点击获取数据
+            var active = {
+                getInfo: function () {
+                    //获取文本框的关键字的值
+                    var KeyWords = $('#KeyWords').val();
+                    if (KeyWords) {
+                        var index = layer.msg('查询中，请稍候...', { icon: 16, time: false, shade: 0 });
+                        setTimeout(function () {
+                            table.reload('OutWareTable', { //表格的id
+                                url: 'OutBlurSelModel',//模糊查询的数据接口（控制器中的操作方法）
+                                page: {
+                                    curr: 1 //重新从第 1 页开始
+                                },
+                                where: {
+                                    KeyWords: $.trim(KeyWords)  //模糊插叙的关键字
+                                }
+                            });
+                            layer.close(index);
+                        }, 200);
+                    } else {
+                        //回调表格渲染的方法函数
+                        OutWTable();
+                    }
+                },
+            };
+            //监听回车事件,扫描枪一扫描或者按下回车键就直接执行查询
+            $("#KeyWords").bind("keyup", function (e) {
+                if (e.keyCode == 13) {
+                    var type = "getInfo";
+                    active[type] ? active[type].call(this) : '';
+                }
+            });
+
+            //数据表格中的操作列
+            table.on("tool(jsTabel)", function (obj) {
+                //绑定操作列按钮
+                var event = obj.event;
+                //获取整行的数据
+                var data = obj.data;
+                if (event == "OutOrDetils") {
+                    layer.open({
+                        type: 2,
+                        content: '@Url.Action("OutOrDetils_View")?order_id=' + data.order_id,
+                        title: "出库订单详情",
+                        btn: ["确认出库", "关闭"],
+                        shadeClose: true,
+                        area: ["900px", "400px"],
+                        yes: function (index, layero) {
+                            if (data.order_state == false) {
+                                $.ajax({
+                                type: "post",
+                                url: "@Url.Action("SureOut_Btn")",
+                                data: { order_id: data.order_id },
+                                success: function (result) {
+                                    if (result.Success) {
+                                        layer.closeAll();
+                                        OutWTable();//刷新数据表格
+                                        layer.msg(result.Message, { icon: 1 });
+                                    }else {
+                                        layer.msg(result.Message, { icon: 5 });
+                                    }
+                                }
+                                })
+                            } else {
+                                layer.msg(Message = "商品已出库！", { icon: 5 });
+                                return false;
+                            }
+
+                        }
+                    })
+                }
+            })
+        })
+    }
+    OutWTable();
+</script>

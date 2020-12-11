@@ -1,0 +1,48 @@
+﻿@{
+    ViewBag.Title = "HelloLayUI";
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@* @Scripts.Render("~/bundles/layui") *@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>欢迎页</title>
+    <link rel="icon" href="../frame/static/image/code.png">
+</head>
+<body class="body">
+
+    <div class="demo">
+        <h1>欢迎进入优梵进销存管理系统</h1>
+    </div>
+
+</body>
+</html>
+<script src="~/Content/src2.5.6/layui.js"></script>
+<script type="text/javascript">
+    layui.use(['element', 'form', 'table', 'layer', 'vip_tab'], function () {
+        var form = layui.form
+            , table = layui.table
+            , layer = layui.layer
+            , vipTab = layui.vip_tab
+            , element = layui.element
+            , $ = layui.jquery;
+
+        // 打开选项卡
+        $('.my-nav-btn').on('click', function () {
+            if ($(this).attr('data-href')) {
+                //vipTab.add('','标题','路径');
+                vipTab.add($(this), '<i class="layui-icon">' + $(this).find("button").html() + '</i>' + $(this).find('p:last-child').html(), $(this).attr('data-href'));
+            }
+        });
+
+        // you code ...
+    })
+</script>

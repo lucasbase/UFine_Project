@@ -1,0 +1,214 @@
+﻿
+@{
+    ViewBag.Title = "Replenish";
+    Layout = null;
+}
+<style>
+    .layui-table-cell .layui-form-checkbox[lay-skin="primary"] {
+        transform: translateY(20%);
+    }
+
+    .layui-table-box.layui-table-header.layui-table {
+        text-align: center
+    }
+    /*设置数据表表头字体*/
+    .layui-table th {
+        /*表头内容居中显示*/
+        text-align: center;
+    }
+</style>
+@Styles.Render("~/Content/css")
+@* 搜索框 *@
+<div class="layui-inline" id="searchKeywordf">
+    <input type="text" autocomplete="off" id="KeyWords" name="KeyWords" style="width:200px" placeholder="补货单号/创建人/商品名" class="layui-input">
+</div>
+ &nbsp;
+ &nbsp;
+<div class="layui-input-inline">
+    <input type="text" name="date" id="date" autocomplete="off" style="width:200px" readonly="readonly" placeholder="请选择日期......" class="layui-input">
+</div>
+<button class="layui-btn layui-btn-normal" lay-submit="" id="RepSel" data-type="getInfo">
+    <i class="layui-icon">&#xe615;</i>查询
+</button>
+
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+    </div>
+</script>
+
+<table class="layui-hide" id="ReplenishTable" lay-filter="jsTabel"></table>
+
+<script type="text/html" id="tbar">
+    <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="Modify">修改</button>
+    <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="Cancel">取消申请</button>
+</script>
+
+@Scripts.Render("~/bundles/layui")
+<script src="~/Content/FormatTime.js"></script>
+<script>
+        function InitTable() {
+            layui.use(['util', 'table', 'laydate'], function () {
+                var table = layui.table;
+                var util = layui.util;
+                laydate = layui.laydate;
+                $ = layui.$,
+                    layer = layui.layer;
+                //日期
+                laydate.render({
+                    elem: '#date'
+                });
+                table.render({
+                    elem: '#ReplenishTable'
+                    , height: 482
+                    , title: '用户数据表'
+                    , url: "@Url.Action("Index")"//数据接口
+                    , page: true
+                    , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+                    , where: { keyWord: $("#keyword").val() }
+                    , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+                    , cols: [[
+                        { type: 'checkbox', fixed: 'left' },
+                        {
+                            title: '序号', width: 80,  align: 'center',templet: function (obj) {
+                                return obj.LAY_INDEX;
+                            }
+                            , fixed: 'left'
+                        },
+                        { field: 'order_num', align: 'center', title: '补货单号', fixed: 'left', width: 190 },
+                        { field: 'creater', align: 'center', title: '创建人' },
+                        {
+                            field: 'create_time', align: 'center', title: '创建时间',
+                            templet: function (d) {
+                                return formatTime(d.create_time);
+                            }, width: 164,
+                        },
+                        {
+                            field: 'order_state', title: '订单状态', width: 110, align: 'center',templet: function (obj) {
+                                if (obj.order_state) {
+                                    return "<span style='color:green'>审核通过</span>";
+                                }
+                                else {
+                                    return "<span style='color:red'>等待审核</span>";
+                                }
+                            }
+                        },
+                        { field: 'product_name', align: 'center', width: 180, title: '商品名称' },
+                        {
+                            title: '订单商品总数', align: 'center', width: 130, templet: function (d) {
+                                return   d.total_num  +'  ('+ d.unit+')';
+                            }
+                        },
+                        {
+                            field: 'total_price', align: 'center', width: 150, title: '订单商品总价', templet: function (d) {
+                                return d.total_price + ' 元';
+                            }},
+                        { fixed: 'right', align: 'center', title: '操作', width: 163, toolbar: "#tbar" }
+                    ]]
+                    , skin: 'row' //表格风格
+                    , even: true
+                    ,limit:10
+                });
+
+
+                $('#RepSel').on('click', function () {
+                    var type = $(this).data('type');
+                    active[type] ? active[type].call(this) : '';
+                });
+                //点击获取数据
+                var active = {
+                    getInfo: function () {
+                        //获取文本框的关键字的值
+                        var KeyWords = $('#KeyWords').val();
+                        var dateInfo = $('#date').val();
+                        if (KeyWords) {
+                            SelectInfo(KeyWords, dateInfo);
+                        } else {
+                            //回调表格渲染的方法函数
+                            //InitTable();
+                            SelectInfo(KeyWords, dateInfo);
+                        }
+                    },
+                };
+                //查询的方法
+                function SelectInfo(KeyWords, dateInfo) {
+                    var index = layer.msg('查询中，请稍候...', { icon: 16, time: false, shade: 0 });
+                    setTimeout(function () {
+                        table.reload('ReplenishTable', { //表格的id
+                            url: 'BlurSelRep',//模糊查询的数据接口（控制器中的操作方法）
+                            page: {
+                                curr: 1 //重新从第 1 页开始
+                            },
+                            where: {
+                                KeyWords: $.trim(KeyWords),  //模糊插叙的关键字
+                                dateInfo: $.trim(dateInfo)  //模糊插叙的关键字
+                            }
+                        });
+                        layer.close(index);
+                    }, 200);
+                }
+                //监听回车事件,扫描枪一扫描或者按下回车键就直接执行查询
+                $("#KeyWords").bind("keyup", function (e) {
+                    if (e.keyCode == 13) {
+                        var type = "getInfo";
+                        active[type] ? active[type].call(this) : '';
+                    }
+                });
+
+                table.on("tool(jsTabel)", function (obj) {
+                    var event = obj.event;
+                    var data = obj.data;
+                    if (event == "Modify") {
+                        if (data.order_state == true) {
+                            layer.msg(Message="订单已审核，不能修改！", { icon: 5 });
+
+                            //icon: 5;
+                            //Message:"订单已审核，不能修改！"
+                        } else {
+                            layer.open({
+                               type: 2,
+                               content: '@Url.Action("Replenish_Modify")?order_id=' + data.order_id,
+                               title: "补货单修改",
+                               //btn: ['关闭'], //可以无限个按钮
+                               shadeClose: true,
+                               area: ["455px", "400px"],
+                               end: function () {
+                               InitTable();
+                               // layui 关闭弹框时的回调函数
+                               }
+                            })
+                        }
+
+                    } else if (event == "Cancel") {
+                        if (data.order_state == true) {
+                            layer.msg(Message = "订单已审核，不能取消申请！", { icon: 5 });
+                        } else {
+                            //弹框确认
+                            layer.confirm("确认取消该订单吗？", function () {
+                            layer.load(5, { shade: [0.5, "#5588AA"] });
+                            $.ajax({
+                                type: "POST",
+                                url: "@Url.Action("CancelReplenish")",
+                                data: { order_id: data.order_id },
+                                success: function (result) {
+                                   layer.closeAll();
+                                   if (result.Success) {
+                                      $("#search").click();
+                                      layer.msg(result.Message, { icon: 1 });
+                                       InitTable();
+                                   }
+                                   else {
+                                      layer.msg(result.Message, { icon: 5 });
+                                   }
+                                }
+
+                            })
+                          })
+                        }
+                    }
+                })
+            })
+        }
+
+        InitTable();
+</script>
+

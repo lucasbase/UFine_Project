@@ -1,0 +1,116 @@
+﻿
+@{
+    Layout = null;
+    ViewBag.Title = "商品销售南丁格尔";
+}
+
+@Styles.Render("~/Content/css")
+@* 某年某月分组查询商品销售金额比例柱状图 *@
+<div id="Rose" style="margin-top:10px;width: 1225px; height:520px"></div>
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/layui")
+
+<script src="~/Scripts/echarts.min.js"></script>
+<script type="text/javascript">
+    //南丁格尔玫瑰图
+    $(function () {
+        Rose();
+    });
+    var ProductName = [];	//定义数组
+    var ProductPrice = [];
+    var Legends = [];
+
+    function Rose() {
+        $.ajax({
+            url: "/Report_Statistics/Sales_Product_Price",
+            type: "post",
+            async: false,
+            dataType: "json",
+            success: function (result) {
+                //$.each方法遍历所需的数据
+                $.each(result.data, function (index, item) {
+                    ProductName.push({ value: item.Nums, name: item.product_name });
+                    ProductPrice.push({ value: item.Price, name: item.product_name })
+                    Legends.push(item.product_name)
+                });
+                //调用饼状图方法
+                InitRose(ProductName, ProductPrice, Legends);
+            },
+            error: function (error) {
+                alert("Ajax获取服务器数据出错了！" + error);
+            }
+        });
+    }
+    //创建一个方法来封装饼状图
+    function InitRose(ProductName, ProductPrice, Legends) {
+        //获取页面div的id属性
+        // 基于准备好的dom，初始化echarts实例
+        var myChartRose = echarts.init(document.getElementById('Rose'));
+        option_Rose = {
+            title: {
+                text: '商品销售玫瑰图',	//可视化主标题
+                textStyle: {
+                    color: 'red',
+                    fontWeight: 'bold',
+                    fontStyle: 'italic',
+                    fontFamily: '微软雅黑'
+                },	//主标题的样式
+                subtext: '各商品销售数量与单价对比',	//副标题
+                subtextStyle: {
+                    color: 'black',
+                    fontFamily: '微软雅黑'
+                },	//副标题的样式
+                x: 'center'
+            },
+            //图例
+            legend: {
+                left: 'center',
+                top: '83%',
+                data: Legends
+            },
+            //提示框组件
+            tooltip: {
+                trigger: 'item',	//触发类型；item:数据项图形触发，主要在散点图，饼图等无类目轴的图表中使用；axis：坐标轴触发，主要在柱状图，折线图等会使用类目轴的图表中使用
+                formatter: "{a}<br/>{b} ：{c} ({d}%)"
+            },
+            //工具组件：如：下载保存统计图表、切换为折线图、切换为柱状图
+            toolbox: {
+                feature: {
+                    saveAsImage: { show: true }
+                }
+            },
+            series: [{
+                name: '商品销售数量',
+                radius: [20, 110], // 设置环形饼状图， 第一个百分数设置内圈大小，第二个百分数设置外圈大小
+                center: ['25%', '50%'], // 设置饼状图位置，第一个百分数调水平位置，第二个百分数调垂直位置
+                data: ProductName,
+                roseType: 'radius',
+                type: 'pie',
+                label: {
+                    show: true,
+                    formatter: '{b}: {c}',
+                },
+                emphasis: {
+                    label: {
+                        show: true
+                    }
+                },
+            }, {
+                name: '商品单价',
+                radius: [30, 110], // 设置环形饼状图， 第一个百分数设置内圈大小，第二个百分数设置外圈大小
+                center: ['73%', '50%'], // 设置饼状图位置，第一个百分数调水平位置，第二个百分数调垂直位置
+                roseType: 'area',
+                type: 'pie',
+                data: ProductPrice,
+                label: {
+                    show: true,
+                    formatter: '{b}: {c}',
+                },
+            }
+
+            ]
+        };
+        // 使用刚指定的配置项和数据显示图表-绑定数据
+        myChartRose.setOption(option_Rose);
+    }
+</script>

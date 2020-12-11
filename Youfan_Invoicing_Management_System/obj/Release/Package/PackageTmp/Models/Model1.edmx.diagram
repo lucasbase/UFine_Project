@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="bcdf9da02f8a487db71d0eca5afee960" Name="Diagram1">
+        <EntityTypeShape EntityType="ERPModel.dep" Width="1.5" PointX="1.5" PointY="19.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ERPModel.emp" Width="1.5" PointX="3.75" PointY="15.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="ERPModel.menu" Width="1.5" PointX="5.75" PointY="11.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ERPModel.order_detail" Width="1.5" PointX="3" PointY="5.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="ERPModel.order_model" Width="1.5" PointX="6" PointY="4.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="ERPModel.order_type" Width="1.5" PointX="0.75" PointY="5.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="ERPModel.product" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="ERPModel.product_type" Width="1.5" PointX="1.5" PointY="9.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="ERPModel.relation_emp_menu" Width="1.5" PointX="8" PointY="14.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ERPModel.relation_role_menu" Width="1.5" PointX="8" PointY="11" IsExpanded="true" />
+        <EntityTypeShape EntityType="ERPModel.role" Width="1.5" PointX="1.5" PointY="16.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="ERPModel.store" Width="1.5" PointX="0.75" PointY="22.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="ERPModel.store_detail" Width="1.5" PointX="3" PointY="1.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="ERPModel.store_log" Width="1.5" PointX="8.25" PointY="5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ERPModel.supplier" Width="1.5" PointX="1.5" PointY="12" IsExpanded="true" />
+        <AssociationConnector Association="ERPModel.FK_role_dep" ManuallyRouted="false" />
+        <AssociationConnector Association="ERPModel.FK_emp_role" ManuallyRouted="false" />
+        <AssociationConnector Association="ERPModel.FK_order_model_emp" ManuallyRouted="false" />
+        <AssociationConnector Association="ERPModel.FK_order_model_emp1" ManuallyRouted="false" />
+        <AssociationConnector Association="ERPModel.FK_relation_emp_menu_emp" ManuallyRouted="false" />
+        <AssociationConnector Association="ERPModel.FK_store_log_emp" ManuallyRouted="false" />
+        <AssociationConnector Association="ERPModel.FK_relation_emp_menu_menu" ManuallyRouted="false" />
+        <AssociationConnector Association="ERPModel.FK_relation_role_menu_menu" ManuallyRouted="false" />
+        <AssociationConnector Association="ERPModel.FK_order_detail_order_type" ManuallyRouted="false" />
+        <AssociationConnector Association="ERPModel.FK_order_detail_product" ManuallyRouted="false" />
+        <AssociationConnector Association="ERPModel.FK_order_model_order_type" ManuallyRouted="false" />
+        <AssociationConnector Association="ERPModel.FK_order_model_product" ManuallyRouted="false" />
+        <AssociationConnector Association="ERPModel.FK_order_model_supplier" ManuallyRouted="false" />
+        <AssociationConnector Association="ERPModel.FK_store_log_order_model" ManuallyRouted="false" />
+        <AssociationConnector Association="ERPModel.FK_store_log_order_type" ManuallyRouted="false" />
+        <AssociationConnector Association="ERPModel.FK_product_product_type" ManuallyRouted="false" />
+        <AssociationConnector Association="ERPModel.FK_store_detail_product" ManuallyRouted="false" />
+        <AssociationConnector Association="ERPModel.FK_product_type_supplier" ManuallyRouted="false" />
+        <AssociationConnector Association="ERPModel.FK_relation_role_menu_role" ManuallyRouted="false" />
+        <AssociationConnector Association="ERPModel.FK_store_detail_store" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

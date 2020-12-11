@@ -1,0 +1,116 @@
+﻿
+@{
+    Layout = null;
+}
+
+@Styles.Render("~/Content/css")
+
+@* 搜索框 *@
+<div class="layui-inline" id="searchKeywordf">
+    <input type="text" autocomplete="off" id="KeyWords" name="KeyWords" style="width:200px" placeholder="操作人/出入库单号/类型" class="layui-input">
+</div>
+<button class="layui-btn layui-btn-normal" lay-submit="" id="BlurSel" data-type="getInfo">
+    <i class="layui-icon">&#xe615;</i>查询
+</button>
+
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+    </div>
+</script>
+
+<table class="layui-hide" id="Store_LogTable" lay-filter="jsTabel"></table>
+
+@*<script type="text/html" id="tbar">
+    <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="Details"> 详情</button>
+</script>*@
+
+@Scripts.Render("~/bundles/layui")
+<script src="~/Content/FormatTime.js"></script>
+<script>
+    function DataLogTable() {
+        layui.use(['table'], function () {
+            var table = layui.table;
+            var layer = layui.layer;
+            $ = layui.$;
+
+            table.render({
+                elem: '#Store_LogTable',
+                height: 482,
+                title: '仓库日志',
+                toolbar: '#toolbarDemo',  //开启头部工具栏，并为其绑定左侧模板
+                url: '@Url.Action("StoreLog_Data")',
+                page: true,
+                cols: [[
+                    {
+                        title: '序号', align: 'center',width:80,
+                        templet: function (obj) {
+                            return obj.LAY_INDEX;
+                        }
+                    },
+                    { title: '操作人', field: 'emp_name', align: 'center' },
+                    { title: '出入库单号', field: 'order_num', align: 'center' },
+                    {
+                        field: 'oper_time', align: 'center', title: '出入库时间',
+                        templet: function (d) {
+                            return formatTime(d.oper_time);
+                        },
+                    },
+                    { title: '出入库数量', field: 'num', align: 'center' },
+                    {
+                        title: '订单类型', field: 'order_type', align: 'center',
+                        templet: function (obj) {
+                            if (obj.order_type == 2) {
+                                return "<span>入库（采购单）</span>";
+                            } else if (obj.order_type==3) {
+                                return "<span>出库（销售单）</span>";
+                            }
+                        }
+                    },
+                    //{ title: '操作', align:'center',fixed:'right',width:80,toolbar:'#tbar'},
+                ]],
+                skin: "row",
+                even: true,
+                limit: 10
+            });
+
+            @* 模糊查询按钮 *@
+            $(document).on('click', "#BlurSel", function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+            //点击获取数据
+            var active = {
+                getInfo: function () {
+                    //获取文本框的关键字的值
+                    var KeyWords = $('#KeyWords').val();
+                    if (KeyWords) {
+                        var index = layer.msg('查询中，请稍候...', { icon: 16, time: false, shade: 0 });
+                        setTimeout(function () {
+                            table.reload('Store_LogTable', { //表格的id
+                                url: 'BlurSel_StoreLog',//模糊查询的数据接口（控制器中的操作方法）
+                                page: {
+                                    curr: 1 //重新从第 1 页开始
+                                },
+                                where: {
+                                    KeyWords: $.trim(KeyWords)  //模糊插叙的关键字
+                                }
+                            });
+                            layer.close(index);
+                        }, 200);
+                    } else {
+                        //回调表格渲染的方法函数
+                        DataLogTable();
+                    }
+                },
+            };
+            //监听回车事件,扫描枪一扫描或者按下回车键就直接执行查询
+            $("#KeyWords").bind("keyup", function (e) {
+                if (e.keyCode == 13) {
+                    var type = "getInfo";
+                    active[type] ? active[type].call(this) : '';
+                }
+            });
+        })
+    }
+    DataLogTable();
+</script>

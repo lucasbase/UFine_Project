@@ -1,0 +1,122 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<style>
+    .InfoLeft {
+        padding: 30px;
+    }
+
+    .SubInfo {
+        margin-top: 70px;
+        margin-left: 100px;
+    }
+</style>
+@Styles.Render("~/Content/css")
+<form class="layui-form-item layui-form InfoLeft" lay-filter="first">
+    <input type="hidden" name="emp_id" value="@ViewBag.emp_id">
+    @*<div class="layui-form layui-form-pane1 InfoLeft" action="" lay-filter="first">*@
+    <!--员工姓名-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">员工姓名：</label>
+        <div class="layui-input-inline">
+            <input type="text" name="emp_name" lay-verify="required" lay-reqtext="用户名是必填项，岂能为空？" placeholder="请输入用户名称" autocomplete="off" value="@ViewBag.emp_name" class="layui-input">
+        </div>
+        <!--用户名-->
+        <label class="layui-form-label">登录名：</label>
+        <div class="layui-input-inline">
+            <input type="text" name="username" value="@ViewBag.username" lay-verify="required" lay-reqtext="用户登录名是必填项，岂能为空？" placeholder="请输入用户登录名" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <!--用户手机号-->
+        <label class="layui-form-label">手机号：</label>
+        <div class="layui-input-inline">
+            <input type="tel" name="tel" value="@ViewBag.tel" lay-verify="required|phone" placeholder="请输入手机号" autocomplete="off" class="layui-input">
+        </div>
+        <!--员工邮箱地址-->
+        <label class="layui-form-label">邮箱地址：</label>
+        <div class="layui-input-inline">
+            <input type="text" name="email" value="@ViewBag.eamil" lay-verify="email" autocomplete="off" class="layui-input" placeholder="请输入用户邮箱地址">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <!--员工角色类型-->
+        <label class="layui-form-label">用户角色：</label>
+        <div class="layui-input-inline">
+            <select id="role_id" name="role_id" lay-filter="Role">
+                <option value=""></option>
+                @foreach (var item in ViewBag.Role as IEnumerable<SelectListItem>)
+                {
+                    var id = ViewBag.Role_ID.ToString();
+                    if (id == @item.Value)
+                    {
+                        <option value="@item.Value" selected="selected">@item.Text</option>
+                    }
+                    else
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                }
+            </select>
+        </div>
+    </div>
+
+    <!--按钮组-->
+    <div class="layui-form-item SubInfo">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="sub" style="margin-right:30px">立即提交</button>
+            <button onclick="parent.layer.closeAll()" class="layui-btn layui-btn-primary" style="margin-left:30px">关闭</button>
+        </div>
+    </div>
+    @*</div>*@
+</form>
+@Scripts.Render("~/bundles/layui")
+<script>
+    layui.use(['form'], function () {
+         var form = layui.form,
+          layer = layui.layer,
+         $ = layui.$;
+     form.on("submit(sub)", function (obj) {
+         var EmpInfo = obj.field;//表单序列化
+         console.log(EmpInfo);
+         var li = layer.load(5);//此处用layui加载动画
+            $.ajax({
+                type: "POST",
+                data: {
+                    EmpInfo: EmpInfo
+                },
+                url: "@Url.Action("EmpEidtlInfo")",
+                success: function (result) {
+                    layer.close(li);//成功获取数据后关闭加载动画
+                    if (result.Success) {
+                        layer.msg(result.Message, {
+                            icon: 1,
+                            time: 3000
+                        });
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        setTimeout(function () { layer.close(index) }, 300);//延迟
+                        parent.TableInit();
+                    }
+                    else {
+                        layer.msg(result.Message, {
+                            icon: 5,
+                            time: 1500
+                        }, function () {
+                            parent.location.reload();
+                        });
+                    }
+                },
+                error: function (error) {
+                    layer.close(li);//成功获取数据后关闭加载动画
+                    layer.msg(error, {
+                        icon: 5,
+                        time: 2000
+                    });
+                }
+            })
+             return false
+    })
+
+ })
+</script>

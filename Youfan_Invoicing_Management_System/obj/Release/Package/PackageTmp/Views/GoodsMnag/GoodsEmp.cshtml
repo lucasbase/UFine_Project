@@ -1,0 +1,119 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = "商品库存管理";
+}
+<style>
+    .layui-table-cell .layui-form-checkbox[lay-skin="primary"] {
+        transform: translateY(20%);
+    }
+
+    .layui-table-box.layui-table-header.layui-table {
+        text-align: center
+    }
+    /*设置数据表表头字体*/
+    .layui-table th {
+        /*表头内容居中显示*/
+        text-align: center;
+    }
+</style>
+@Styles.Render("~/Content/css")
+@* 搜索框 *@
+<div class="layui-inline" id="searchKeywordf">
+    <input type="text" autocomplete="off" id="KeyWords" name="KeyWords" placeholder="商品名称/厂商" class="layui-input">
+</div>
+<button class="layui-btn layui-btn-normal" lay-submit="" id="ProSel" data-type="getInfo">
+    <i class="layui-icon">&#xe615;</i>查询
+</button>
+
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+    </div>
+</script>
+
+@* 数据表格 *@
+<table class="layui-hide" id="ProductTable" lay-filter="jsTabel"></table>
+
+@Scripts.Render("~/bundles/layui")
+<script>
+        function ProTab() {
+            layui.use(['table'], function () {
+                var table = layui.table;
+                $ = layui.$,
+                    layer = layui.layer;
+                table.render({
+                    elem: '#ProductTable'
+                    , height: 482
+                    , title: '用户数据表'
+                    , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+                    , url: "@Url.Action("Index")"//数据接口
+                    , page: true
+                    , where: { keyWord: $("#keyword").val() }
+                    , cellMinWidth: 150 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+                    , cols: [[
+                        {
+                            title: '序号', width: 85, align: 'center', templet: function (obj) {
+                                return obj.LAY_INDEX;
+                            }
+                            , fixed: 'left'
+                        },
+                        { field: 'product_name', align: 'center', title: '商品名称' },
+                        { field: 'producer', align: 'center', title: '产商' },
+
+                        {
+                            field: 'in_price', align: 'center', title: '商品单价', templet: function (d) {
+                                return d.in_price + ' 元';
+                            } },
+                        {
+                            title: '商品库存（单位）', align: 'center', templet: function (d) {
+                                return d.pro_Inventory + '  (' + d.unit + ')';
+                            }
+                        }
+                    ]]
+                    ,done: function (res, curr, count) {
+                        $("table").css("width", "100 %");
+                        //这里设置表格的宽度为100%
+                    }
+                    , skin: 'row' //表格风格
+                    , even: true
+                    ,limit:10
+                });
+                $('#ProSel').on('click', function () {
+                    var type = $(this).data('type');
+                    active[type] ? active[type].call(this) : '';
+                });
+                //点击获取数据
+                var active = {
+                    getInfo: function () {
+                        //获取文本框的关键字的值
+                        var KeyWords = $('#KeyWords').val();
+                        if (KeyWords) {
+                            var index = layer.msg('查询中，请稍候...', { icon: 16, time: false, shade: 0 });
+                            setTimeout(function () {
+                                table.reload('ProductTable', { //表格的id
+                                    url: 'BlurSelPro',//模糊查询的数据接口（控制器中的操作方法）
+                                    page: {
+                                        curr: 1 //重新从第 1 页开始
+                                    },
+                                    where: {
+                                        KeyWords: $.trim(KeyWords)  //模糊插叙的关键字
+                                    }
+                                });
+                                layer.close(index);
+                            }, 200);
+                        } else {
+                            //回调表格渲染的方法函数
+                            ProTab();
+                        }
+                    },
+                };
+                //监听回车事件,扫描枪一扫描或者按下回车键就直接执行查询
+                $("#KeyWords").bind("keyup", function (e) {
+                    if (e.keyCode == 13) {
+                        var type = "getInfo";
+                        active[type] ? active[type].call(this) : '';
+                    }
+                });
+            })
+        }
+        ProTab();//调用函数，显示表格
+</script>

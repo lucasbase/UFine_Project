@@ -1,0 +1,249 @@
+﻿@{
+    ViewBag.Title = "部门管理";
+    Layout = null;
+}
+<style>
+    .layui-table-cell .layui-form-checkbox[lay-skin="primary"] {
+        transform: translateY(20%);
+    }
+
+    .layui-table-box.layui-table-header.layui-table {
+        text-align: center
+    }
+    /*设置数据表表头字体*/
+    .layui-table tr th {
+        /*表头内容居中显示*/
+        text-align: center;
+    }
+</style>
+
+@Styles.Render("~/Content/css")
+@* 搜索框 *@
+<div class="layui-inline">
+    @*<label class="layui-form-label">请输入：</label>*@
+    <div class="layui-inline" id="searchKeywordf">
+        <input type="text" autocomplete="off" id="KeyWords" name="KeyWords" placeholder="部门名称……" class="layui-input">
+    </div>
+</div>
+@* 搜索按钮 *@
+<button class="layui-btn layui-btn-normal" lay-submit="" id="search" data-type="getInfo"><i class="layui-icon">&#xe615;</i>查询</button>
+
+@* LayUI数据表格 *@
+<table class="layui-hide" id="DepTable" lay-filter="jsTabel"></table>
+@* 操作按钮组批量删除、新增 *@
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <div class="layui-btn layui-btn-sm" id="addDep"><i class="layui-icon">&#xe61f;</i>新增</div>
+        @*<div class="layui-btn layui-btn-sm" id="batchDel"><i class="layui-icon">&#xe640;</i>批量删除</div>*@
+    </div>
+</script>
+@* 操作按钮删除、修改、冻结 *@
+<script type="text/html" id="tbar">
+    <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="Edit"><i class="layui-icon">&#xe642;</i>修改</button>
+    <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="Del"><i class="layui-icon">&#xe640;</i>删除</button>
+</script>
+
+@Scripts.Render("~/bundles/layui")
+<script type="text/javascript">
+        //LayUI数据表格渲染
+    function DepTableInit() {
+        layui.use(['table', 'laydate'], function () {
+            var table = layui.table;
+            $ = layui.$,
+                layer = layui.layer;
+            //数据表格渲染
+            table.render({
+                elem: '#DepTable'
+                , height: 482
+                //,width:700
+                , title: '部门数据表'
+                , url: "@Url.Action("Dep_ManagementIndex")"//数据接口
+                , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+                , cellMinWidth: 200 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+                , cols: [[
+                    { type: 'checkbox', fixed: 'left' },
+                    {
+                        title: '序号', templet: function (obj) {
+                            return obj.LAY_INDEX;
+                        }
+                        , fixed: 'left'
+                    },
+                    { field: 'Dep_ID', title: '部门编号'},
+                    { field: 'Dep_Name', title: '部门名称' },
+                    { field: 'Dep_Tel', title: '部门电话' },
+                    { title: '操作', toolbar: "#tbar" }
+                ]]
+                , page: true
+                , skin: 'row' //表格风格
+                , even: true
+                , limit: 10
+            });
+            //模糊查询方法
+            $('#search').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+            //点击获取数据
+            var active = {
+                getInfo: function () {
+                    //获取文本框的关键字的值
+                    var KeyWords = $('#KeyWords').val();
+                    //var date = $('#date').val();
+                    if (KeyWords) {
+                        var index = layer.msg('查询中，请稍候...', { icon: 16, time: false, shade: 0 });
+                        setTimeout(function () {
+                            table.reload('DepTable', { //表格的id
+                                url: 'GetAjaxDepList',//模糊查询的数据接口（控制器中的操作方法）
+                                page: {
+                                    curr: 1 //重新从第 1 页开始
+                                },
+                                where: {
+                                    KeyWords: $.trim(KeyWords),  //模糊插叙的关键字
+                                    //date: $.trim(date.toString(""))  //模糊插叙的关键字
+                                }
+                            });
+                            layer.close(index);
+                        }, 200);
+                    } else {
+                        //回调表格渲染的方法函数
+                        DepTableInit();
+                    }
+                },
+            };
+            //监听回车事件,扫描枪一扫描或者按下回车键就直接执行查询
+            $("#KeyWords").bind("keyup", function (e) {
+                if (e.keyCode == 13) {
+                    var type = "getInfo";
+                    active[type] ? active[type].call(this) : '';
+                }
+            });
+
+            //新增按钮
+            $(document).on("click", "#addDep", function (event) {
+                layer.open({
+                    type: 2,
+                    content: '@Url.Action("DepAdd")',
+                    title: "新增部门信息",
+                    area: ["420px", "290px"],
+                    //btn: ['立即提交', '关闭'],
+                    shadeClose: true,
+                    end: function (index) {
+                        layer.close(layer.index);
+                        layer.close(index);
+                        //layui 关闭弹框时的回调函数
+                        DepTableInit();//刷新数据表格
+
+                    }
+                })
+            });
+
+            //数据表格中的修改、删除、冻结与解冻按钮
+            table.on("tool(jsTabel)", function (obj) {
+                //绑定数据表格中的按钮标记
+                var event = obj.event;
+                //获取数据表格中的某一行的整个对象
+                var data = obj.data;
+                console.log(data);
+                if (event == "Edit") {
+                    layer.open({
+                        type: 2,
+                        content: '@Url.Action("DepEidt")?dep_id=' + data.Dep_ID,
+                        title: "修改部门信息",
+                        area: ["420px", "290px"],
+                        end: function () { // layui 关闭弹框时的回调函数
+                            DepTableInit();//刷新数据表格
+                        }
+                    })
+                }
+                else if (event == "Del") { // 删除
+                    var Dep_ID = data.Dep_ID;
+                    layer.confirm("确认删除吗？", function () {
+                        layer.load(5, { shade: [0.5, "#5588AA"] });
+                        $.ajax({
+                            type: "POST",
+                            url: "@Url.Action("DelDep")",
+                            data: { Dep_ID: Dep_ID },
+                            success: function (result) {
+                                layer.closeAll();
+                                if (result.Success) {
+                                    DepTableInit();//刷新数据表格
+                                    layer.msg(result.Message, { icon: 1 });
+                                }
+                                else {
+                                    layer.msg(result.Message, {
+                                        icon: 5,
+                                        time: 1800
+                                    }, function () {
+                                        location.reload();
+                                    });
+                                }
+                            },
+                            error: function (error) {
+                                layer.close(ii);//成功获取数据后关闭加载动画
+                                layer.msg(error, {
+                                    icon: 5,
+                                    time: 1800
+                                });
+                            }
+                        })
+                    })
+                }
+            })
+
+            //批量删除按钮
+            $(document).on("click", "#batchDel", function () {
+                //获取LayUI数据表格中的所有数据
+                var selectedobjs = table.checkStatus("DepTable").data;
+                console.log(selectedobjs);
+                //var Emp_ID = [];
+                //$(selectedobjs).each(function (index, item) {
+                //    Emp_ID.push(item.Emp_ID);
+                //})
+
+                //循环遍历表格中的员工ID
+                var Dep_IDs = selectedobjs.map(function (item) {
+                    return item.Dep_ID;
+                })
+                console.info(Dep_IDs);
+                //判断是否选中了一行
+                if (!Dep_IDs || Dep_IDs.length <= 0) {
+                    layer.msg('请选择至少一行数据！！！');
+                    return false;
+                }
+
+                //弹框确认
+                layer.confirm("确认批量删除吗？", function () {
+                    layer.load(5, { shade: [0.5, "#5588AA"] });
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("BatchDelDeps")",
+                        data: { Dep_IDs: Dep_IDs },
+                        success: function (result) {
+                            layer.closeAll();
+                            if (result.Success) {
+                                DepTableInit();
+                                layer.msg(result.Message, { icon: 1 });
+                            }
+                            else {
+                                layer.msg(result.Message, {
+                                    icon: 5,
+                                    time: 1800
+                                }, function () {
+                                    location.reload();
+                                });
+                            }
+                        },
+                        error: function (error) {
+                            layer.close(ii);//成功获取数据后关闭加载动画
+                            layer.msg(error, {
+                                icon: 5,
+                                time: 1800
+                            });
+                        }
+                    })
+                })
+            })
+        })
+    }
+    DepTableInit();
+</script>

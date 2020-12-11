@@ -1,0 +1,320 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = "员工管理";
+}
+<style>
+    .layui-table-cell .layui-form-checkbox[lay-skin="primary"] {
+        transform: translateY(20%);
+    }
+
+    .layui-table-box.layui-table-header.layui-table {
+        text-align: center
+    }
+
+    /*设置数据表表头字体*/
+    .layui-table tr th {
+        /*表头内容居中显示*/
+        text-align: center;
+    }
+</style>
+@Styles.Render("~/Content/css")
+
+@* 搜索框 *@
+<div class="layui-inline">
+    <div class="layui-inline" id="searchKeywordf">
+        <input type="text" autocomplete="off" id="KeyWords" name="KeyWords" placeholder="员工姓名/角色名称" class="layui-input">
+    </div>
+</div>
+<button class="layui-btn layui-btn-normal" lay-submit="" id="search" data-type="getInfo"><i class="layui-icon">&#xe615;</i>查询</button>
+@* LayUI数据表格 *@
+<table class="layui-hide" id="EmpTable" lay-filter="jsTabel"></table>
+@* 操作按钮组批量删除、新增 *@
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <div class="layui-btn layui-btn-sm" id="addEmp"><i class="layui-icon">&#xe61f;</i>新增</div>
+        @*<div class="layui-btn layui-btn-sm" id="batchDel"><i class="layui-icon">&#xe640;</i>批量删除</div>*@
+        <div lay-submit="" class="layui-btn layui-btn-sm" id="exportExcel" name="exportExcel">
+            <i class="layui-icon"></i>导出Excel
+        </div>
+    </div>
+</script>
+@* 操作按钮删除、修改、冻结 *@
+<script type="text/html" id="tbar">
+    <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="Edit"><i class="layui-icon">&#xe642;</i>修改</button>
+    <button class="layui-btn layui-btn-sm" lay-event="Authorize"><i class="layui-icon">&#xe672;</i>权限修改</button>
+    @*<button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="Del"><i class="layui-icon">&#xe640;</i>删除</button>*@
+    {{#  if(d.IsFrozen){ }}
+    <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="Thaw">冻结</button>
+    {{#  } else{ }}
+    <button class="layui-btn layui-btn-sm  layui-btn-normal " lay-event="Frozen">解冻</button>
+    {{#  }}}
+
+</script>
+<script type="text/html" id="Sex">
+    @* 性别模板 *@
+    {{#  if(d.Emp_Sex){ }}
+    男
+    {{#  } else{ }}
+    女
+    {{#  }}}
+</script>
+
+@Scripts.Render("~/bundles/layui")
+<script type="text/javascript">
+    function TableInit() {
+
+        layui.use(['table', 'laydate'], function () {
+            var table = layui.table;
+            $ = layui.$,
+                layer = layui.layer;
+            var laydate = layui.laydate;
+            //日期常规用法
+            laydate.render({
+                elem: '#date'
+            });
+            //数据表格渲染
+            table.render({
+                elem: '#EmpTable'
+                , height: 482
+                , title: '用户数据表'
+                , url: "@Url.Action("GetAjaxUserList")"//数据接口
+                , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+                , cellMinWidth: 90 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+                , cols: [[
+                    { type: 'checkbox', fixed: 'left' },
+                    {
+                        title: '序号', width: 80, align: 'center', templet: function (obj) {
+                            return obj.LAY_INDEX;
+                        }
+                        , fixed: 'left'
+                    },
+                    { field: 'Emp_Name', title: '员工姓名', align: 'center', width: 130, fixed: 'left' },
+                    { field: 'Emp_Sex', title: '性别', align: 'center', width: 90, toolbar: "#Sex" },
+                    { field: 'Emp_email', title: 'Email', align: 'center', width: 240 },
+                    { field: 'Role_Name', title: '角色名', align: 'center', width: 150 },
+                    { field: 'Emp_tel', title: '联系电话', align: 'center', width: 150 },
+                    { field: 'Dep_Name', title: '所属部门', align: 'center', width: 150 },
+                    { title: '操作', fixed: 'right', width: 260, align: 'center', toolbar: "#tbar" }
+                ]]
+                , page: true
+                , skin: 'row' //表格风格
+                , even: true
+                , limit: 10
+            });
+            //模糊查询方法
+            $('#search').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+            //点击获取数据
+            var active = {
+                getInfo: function () {
+                    //获取文本框的关键字的值
+                    var KeyWords = $('#KeyWords').val();
+                    //var date = $('#date').val();
+                    if (KeyWords) {
+                        var index = layer.msg('查询中，请稍候...', { icon: 16, time: false, shade: 0 });
+                        setTimeout(function () {
+                            table.reload('EmpTable', { //表格的id
+                                url: 'GetAjaxEmpList',//模糊查询的数据接口（控制器中的操作方法）
+                                page: {
+                                    curr: 1 //重新从第 1 页开始
+                                },
+                                where: {
+                                    KeyWords: $.trim(KeyWords),  //模糊插叙的关键字
+                                    //date: $.trim(date.toString(""))  //模糊插叙的关键字
+                                }
+                            });
+                            layer.close(index);
+                        }, 200);
+                    } else {
+                        //回调表格渲染的方法函数
+                        TableInit();
+                    }
+                },
+            };
+            //监听回车事件,扫描枪一扫描或者按下回车键就直接执行查询
+            $("#KeyWords").bind("keyup", function (e) {
+                if (e.keyCode == 13) {
+                    var type = "getInfo";
+                    active[type] ? active[type].call(this) : '';
+                }
+            });
+            $("#date").bind("keyup", function (e) {
+                if (e.keyCode == 13) {
+                    var type = "getInfo";
+                    active[type] ? active[type].call(this) : '';
+                }
+            });
+
+            //批量删除按钮
+            @*$(document).on("click", "#batchDel", function () {
+                //获取LayUI数据表格中的所有数据
+                var selectedobjs = table.checkStatus("EmpTable").data;
+                console.log(selectedobjs);
+                //var Emp_ID = [];
+                //$(selectedobjs).each(function (index, item) {
+                //    Emp_ID.push(item.Emp_ID);
+                //})
+
+                //循环遍历表格中的员工ID
+                var Emp_IDs = selectedobjs.map(function (item) {
+                    return item.Emp_ID;
+                })
+                console.info(Emp_IDs);
+                //判断是否选中了一行
+                if (!Emp_IDs || Emp_IDs.length <= 0) {
+                    layer.msg('请选择至少一行数据！！！');
+                    return false;
+                }
+
+                //弹框确认
+                layer.confirm("确认批量删除吗？", function () {
+                    layer.load(5, { shade: [0.5, "#5588AA"] });
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("BatchDelEmps")",
+                        data: { Emp_IDs: Emp_IDs },
+                        success: function (result) {
+                            layer.closeAll();
+                            if (result.Success) {
+                                TableInit();
+                                layer.msg(result.Message, { icon: 1 });
+                            }
+                            else {
+                                layer.msg(result.Message, { icon: 5 });
+                            }
+                        }
+                    })
+                })
+            })*@
+
+            //导出员工信息Excel按钮
+            $(document).on("click", "#exportExcel", function () {
+                    $.ajax({
+                        type: "get",
+                        url: "@Url.Action("ExportData")",
+                        success: function (result) {
+                            window.location = '/Emp_Management/ExportData'
+                                layer.msg("导出成功！！！", { icon: 1 });
+                        },
+                        error: function (res)
+                        {
+                            layer.msg(res, { icon: 5 });
+                        }
+                    })
+
+            })
+
+            //新增按钮
+            $(document).on("click", "#addEmp", function (event) {
+                layer.open({
+                    type: 2,
+                    content: '@Url.Action("EmpAdd")',
+                    title: "新增员工信息",
+                    area: ["870px", "520px"],
+                    //shadeClose: true,
+                    end: function (index) {
+                        layer.close(layer.index);
+                        layer.close(index);
+                        //layui 关闭弹框时的回调函数
+                        //TableInit();//刷新数据表格
+                        location.reload();
+                    }
+                })
+            });
+
+            //数据表格中的修改、删除、冻结与解冻按钮
+            table.on("tool(jsTabel)", function (obj) {
+                //绑定数据表格中的按钮标记
+                var event = obj.event;
+                //获取数据表格中的某一行的整个对象
+                var data = obj.data;
+                console.log(data); 
+                if (event == "Edit") {
+                    layer.open({
+                        type: 2,
+                        content: '@Url.Action("EmpEidt")?emp_id=' + data.Emp_ID,
+                        title: "修改员工信息",
+                        area: ["700px", "380px"],
+                        end: function () { // layui 关闭弹框时的回调函数
+                            //TableInit();//刷新数据表格
+                            location.reload();
+                        }
+                    })
+                } else if (event == "Authorize") {
+                    layer.open({
+                        type: 2,
+                        content: '@Url.Action("EmpSubAuthority")?emp_id=' + data.Emp_ID,
+                        title: "修改员工权限信息",
+                        area: ["500px", "500px"],
+                        end: function () { // layui 关闭弹框时的回调函数
+                            location.reload(); //TableInit();//刷新数据表格
+                        }
+                    })
+                }
+                @*else if (event == "Del") { // 删除
+                    var Emp_ID = data.Emp_ID;
+                    layer.confirm("确认删除吗？", function () {
+                        layer.load(5, { shade: [0.5, "#5588AA"] });
+                        $.ajax({
+                            type: "POST",
+                            url: "@Url.Action("DelEmp")",
+                            data: { Emp_ID: Emp_ID },
+                            success: function (result) {
+                                layer.closeAll();
+                                if (result.Success) {
+                                    TableInit();//刷新数据表格
+                                    layer.msg(result.Message, { icon: 1 });
+                                }
+                                else {
+                                    layer.msg(result.Message, { icon: 5 });
+                                }
+                            }
+                        })
+                    })
+
+                }*@
+                else if (event == "Thaw") {  // 冻结
+                    var Emp_ID = data.Emp_ID;
+                    layer.confirm("确认冻结吗？", function () {
+                        $.ajax({
+                            type: "POST",
+                            url: "@Url.Action("Frozen")",
+                            data: { Emp_ID: Emp_ID },
+                            success: function (result) {
+                                layer.closeAll();
+                                if (result.Success) {
+                                    TableInit();//刷新数据表格
+                                    layer.msg(result.Message, { icon: 1 });
+                                }
+                                else {
+                                    layer.msg(result.Message, { icon: 5 });
+                                }
+                            }
+                        })
+                    })
+                }
+                else if (event == "Frozen") {  // 解冻
+                    var Emp_ID = data.Emp_ID;
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("Thaw")",
+                        data: { Emp_ID: Emp_ID },
+                        success: function (result) {
+                            layer.closeAll();
+                            if (result.Success) {
+                                TableInit();//刷新数据表格
+                                layer.msg(result.Message, { icon: 1 });
+                            }
+                            else {
+                                layer.msg(result.Message, { icon: 5 });
+                            }
+                        }
+                    })
+                }
+            })
+        })
+    }
+    TableInit();
+</script>

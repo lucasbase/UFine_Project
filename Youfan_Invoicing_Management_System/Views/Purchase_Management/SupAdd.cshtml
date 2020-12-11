@@ -1,0 +1,277 @@
+﻿
+@{
+    Layout = null;
+}
+
+@Styles.Render("~/Content/css")
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-carousel" id="stepForm" lay-filter="stepForm" style="margin: 0 auto;">
+                <div carousel-item>
+                    <div>
+                        <form class="layui-form" style="margin: 0 auto;max-width: 330px;padding-top: 25px;">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">供应商单位名：</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="supplier_name" lay-verify="required" lay-reqtext="供应商单位名是必填项，岂能为空？" placeholder="请输入供应商单位名" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                @*用户名*@
+                                <label class="layui-form-label">供应商地址：</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="address" lay-verify="required" lay-reqtext="供应商地址必填项，岂能为空？" placeholder="请输入供应商地址" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                @*用户手机号*@
+                                <label class="layui-form-label">联系人：</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="contact" lay-verify="required" placeholder="请输入联系人" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-form-item">
+                                    @*用户手机号*@
+                                    <label class="layui-form-label">联系电话：</label>
+                                    <div class="layui-input-inline">
+                                        <input type="tel" name="tel" lay-verify="required|phone" placeholder="请输入联系电话" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button class="layui-btn" id="AddSupplier" lay-submit lay-filter="AddSupplier">
+                                        &emsp;下一步&emsp;
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div>
+                        <form class="layui-form" style="margin: 0 auto;max-width: 400px;padding-top: 40px;">
+                            <div class="layui-form-item">
+                                <!--添加商品类型-->
+                                <div id="InputsWrapper">
+                                    @*<label class="layui-form-label">商品类型：</label>*@
+                                    <input type="text" name="product_type_name" id="news_1" placeholder="请输入商品类型" autocomplete="off" class="layui-input"><br />
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <input type="button" id="AddMoreTextBox" value="添加" lay-submit lay-filter="Add" class="layui-btn">
+                                    <button class="layui-btn" id="checkbarTreea_btna" lay-submit lay-filter="formStep2">
+                                        &emsp;确认提交&emsp;
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div>
+                        <div style="text-align: center;margin-top: 90px;">
+                            <i class="layui-icon layui-circle"
+                               style="color: white;font-size:30px;font-weight:bold;background: #52C41A;padding: 20px;line-height: 80px;">&#xe605;</i>
+                            <div style="font-size: 24px;color: #333;font-weight: 500;margin-top: 30px;">
+                                添加供应商信息成功
+                            </div>
+                        </div>
+                        <div style="text-align: center;margin-top: 50px;">
+                            <button class="layui-btn next">继续添加</button>
+                            <button class="layui-btn layui-btn-primary" id="Close">关闭</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+        </div>
+    </div>
+</div>
+
+
+
+
+@Scripts.Render("~/bundles/layui")
+<script src="~/Scripts/jquery-3.5.1.js"></script>
+<script>
+    //添加按钮的事件
+    $(document).ready(function () {
+        var InputCount = 1;
+        $("#AddMoreTextBox").click(function (e) {
+            InputCount++;
+            $("#InputsWrapper").append('<input type="text" name="product_type_name" id="news_' + InputCount + '" placeholder="请输入商品类型" autocomplete="off" class="layui-input" /><br/>');
+        });
+    })
+</script>
+<script type="text/javascript">
+    var userName = "";
+    layui.config({
+        base: '/step/step-lay/'
+    }).use(['form', 'step'], function () {
+        var $ = layui.$
+            , form = layui.form
+            , step = layui.step;
+
+        step.render({
+            elem: '#stepForm',
+            filter: 'stepForm',
+            width: '100%', //设置容器宽度
+            stepWidth: '500px',
+            height: '500px',
+            stepItems: [{
+                title: '添加供应商信息'
+            }, {
+                title: '添加商品类型'
+            }, {
+                title: '完成'
+            }]
+        });
+
+
+
+
+        form.on('submit(AddSupplier)', function (data) {
+            var Supplier = data.field;
+            console.log(Supplier);
+            supplier_name = data.field.supplier_name;
+            console.log(supplier_name);
+            //step.next('#stepForm');
+                 //异步提交
+                $.ajax({
+                    type: "POST",
+                    data: {
+                        Supplier: Supplier
+                        },
+                    url: "@Url.Action("Add_Supplier_Info")",
+                    success: function (result) {
+                        if (result.Success) {
+                            layer.msg(result.Message, {
+                                icon: 1
+                            });
+                            step.next('#stepForm');
+                            return false;
+                        }
+                        else {
+                            layer.msg(result.Message, {
+                                icon: 5,
+                                time: 1500
+                            });
+                        }
+                }
+                })
+            return false;
+        });
+        form.on('submit(formStep2)', function (data) {
+            var productnames = [];
+            $("input[name='product_type_name']").each(function () {
+                productnames.push($(this).val());
+            })
+            console.log(productnames);
+            //var productnames = data.field;
+            //异步提交
+             $.ajax({
+                type: "POST",
+                data: {
+                    productnames: productnames,
+                    supplier_name: supplier_name
+                },
+                url: "@Url.Action("Add_product_type")",
+                success: function (result) {
+                    if (result.Success) {
+                        layer.msg(result.Message, {
+                            icon: 1
+                        });
+                        step.next('#stepForm');
+                        return false;
+                    }
+                    else {
+                        layer.msg(result.Message, {
+                            icon: 5,
+                            time: 1500
+                        });
+                    }
+                }
+            })
+            return false;
+        });
+
+        $('.next').click(function () {
+            step.next('#stepForm');
+            location.reload();
+        });
+        $("#Close").click(function () {
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            setTimeout(function () { parent.layer.close(index) }, 300);//延迟
+            parent.TableInit();
+        })
+    })
+
+
+            layui.use(['form', 'layedit', 'laydate'], function () {
+                var form = layui.form
+                layer = layui.layer,
+                layedit = layui.layedit,
+                laydate = layui.laydate,
+                    $ = layui.$;
+                //自定义验证规则
+                form.verify({
+                    emp_name: [
+                        /^([\u4e00-\u9fa5]|[a-zA-Z]| |•|-|‧|•|⋅|ㆍ|・|●|(\（+\）)|(\（[\u4e00-\u9fa5]+\）)|(\（[a-zA-Z]+\）)){2,20}$/
+                        , '请输入正确的员工姓名，且长度2-20！'
+                    ],
+                    password: [
+                        /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z\\W]{6,12}$/
+                        , '密码至少包含数字跟字母，可以有字符，不能出现空格，且长度6-12！'
+                    ]
+                });
+
+                //$("#checkbarTreea_btna").click(function (data) {
+                //    var EmpInfo = data.field;
+                //    console.log(EmpInfo);
+                //})
+
+                //form.on("submit(sub)", function (obj) {
+                //    var EmpInfo = data.field;
+                //    console.log(EmpInfo);
+                //})
+
+                //监听提交按钮
+                @*form.on("submit(sub)", function (obj) {
+                    //获取表单中的所有数据
+                    var EmpInfo = obj.field;
+                    var ii = layer.load(5);//此处用layui加载动画
+                    //console.log(EmpInfo);
+                    //异步提交
+                $.ajax({
+                    type: "POST",
+                    data: {
+                        EmpInfo: EmpInfo
+                        },
+                    url: "@Url.Action("EmpAdd")",
+                    success: function (result) {
+                        layer.close(ii);//成功获取数据后关闭加载动画
+                        if (result.Success) {
+                            layer.msg(result.Message, {
+                                icon: 1,
+                                time: 3000
+                            });
+                            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                            parent.TableInit();
+                            setTimeout(function () { layer.close(index) }, 300);//延迟
+                    }
+                        else {
+                            layer.msg(result.Message, {
+                                icon: 5,
+                                time: 1500
+                            }, function () {
+                                parent.location.reload();
+                            });
+                    }
+                }
+                })
+                    return false
+        })*@
+ })
+</script>
+

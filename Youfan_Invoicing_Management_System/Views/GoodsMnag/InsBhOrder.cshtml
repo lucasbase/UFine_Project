@@ -1,0 +1,101 @@
+﻿@{
+    Layout = null;
+}
+<style>
+    .InfoLeft {
+        margin: 20px;
+        margin-top: 30px
+    }
+
+    .SubInfo {
+        margin-top: 35px
+    }
+</style>
+@Styles.Render("~/Content/css")
+<div class="layui-form layui-form-pane1 InfoLeft" action="" lay-filter="first">
+    <!--商品名称-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">供货商：</label>
+        <div class="layui-input-inline">
+            <input type="text" name="product_name" placeholder="@ViewBag.SupplierName" autocomplete="off" class="layui-input" readonly="readonly">
+        </div>
+    </div>
+    <!--商品名称-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">商品名称：</label>
+        <div class="layui-input-inline">
+            <input type="text" name="product_name" placeholder="@ViewBag.ProName" autocomplete="off" class="layui-input" readonly="readonly">
+        </div>
+    </div>
+    <!--申请补货商品数量-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">申请数量：</label>
+        <div class="layui-input-inline">
+            <input type="text" name="total_num" lay-verify="total_num" placeholder="申请补货的数量" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <!--按钮组-->
+    <div class="layui-form-item SubInfo">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="sub" style="margin-right:20px">立即提交</button>
+            <button onclick="parent.layer.closeAll()" class="layui-btn layui-btn-primary" style="margin-left:20px">关闭</button>
+        </div>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/layui")
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form
+        layer = layui.layer,
+            $ = layui.$; //自定义验证规则
+        form.verify({
+            total_num: [
+                /^[0-9]*[1-9][0-9]{0,3}$/
+                , '请输入正确的申请数量!'
+            ]
+        });
+        //表单的监听事件
+        form.on("submit(sub)", function (obj) {
+            var order_model = obj.field;
+            var li = layer.load();//此处用layui加载动画
+            $.ajax({
+                type: "POST",
+                data: {
+                    order_model: order_model,
+                    product_id: @ViewBag.ProID,
+                    SupplierName:"@ViewBag.SupplierName",
+                },
+                url: "@Url.Action("InsertReplenish")",
+                success: function (result) {
+                    layer.close(li);//成功获取数据后关闭加载动画
+                    if (result.Success) {
+                        layer.msg(result.Message, {
+                            icon: 1,
+                            time: 3000
+                        });
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        //parent.TableInit();
+                        setTimeout(function () { parent.layer.close(index) }, 300);//延迟
+                    }
+                    else {
+                        layer.msg(result.Message, {
+                            icon: 5,
+                            time: 2000
+                        }, function () {
+                            parent.location.reload();
+                        });
+                    }
+                }, error: function (error) {
+                    layer.close(li);//成功获取数据后关闭加载动画
+                    parent.layer.msg(error, {
+                        icon: 5,
+                        time: 2000
+                    });
+                }
+            })
+            return false
+        })
+    })
+
+</script>

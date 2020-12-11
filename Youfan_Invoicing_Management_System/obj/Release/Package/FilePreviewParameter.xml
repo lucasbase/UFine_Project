@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="IIS Web Application Name" description="" value="UFine_System" tags="IisApp">
+    <parameterEntry kind="ProviderPath" scope="IisApp" match="^E:\\卓越项目\\大三卓越项目\\7_4\\7_4\\Youfan_Invoicing_Management_System\\Youfan_Invoicing_Management_System\\obj\\Release\\Package\\PackageTmp$" />
+    <parameterEntry kind="ProviderPath" scope="setAcl" match="^E:\\卓越项目\\大三卓越项目\\7_4\\7_4\\Youfan_Invoicing_Management_System\\Youfan_Invoicing_Management_System\\obj\\Release\\Package\\PackageTmp$" />
+  </parameter>
+  <parameter name="ERPEntities-Web.config Connection String" description="" value="metadata=res://*/Models.Model1.csdl|res://*/Models.Model1.ssdl|res://*/Models.Model1.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=.;initial catalog=ERP;persist security info=True;user id=sa;password=123456;MultipleActiveResultSets=True;App=EntityFramework&quot;" tags="">
+    <parameterEntry kind="XmlFile" scope="E:\\卓越项目\\大三卓越项目\\7_4\\7_4\\Youfan_Invoicing_Management_System\\Youfan_Invoicing_Management_System\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='ERPEntities']/@connectionString" />
+  </parameter>
+</parameters>

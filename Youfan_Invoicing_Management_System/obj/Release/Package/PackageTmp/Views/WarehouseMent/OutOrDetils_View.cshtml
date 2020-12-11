@@ -1,0 +1,79 @@
+﻿
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>补货单详情</title>
+    <link href="~/Content/assets/css/layui.css" rel="stylesheet" />
+    <style>
+        .layui-table-cell .layui-form-checkbox[lay-skin="primary"] {
+            transform: translateY(20%);
+        }
+
+        .layui-table-box.layui-table-header.layui-table {
+            text-align: center
+        }
+        /*设置数据表表头字体*/
+        .layui-table th {
+            /*表头内容居中显示*/
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <table class="layui-table">
+            <tr>
+                <td><strong>销售单号</strong></td>
+                <td colspan="2">@ViewBag.order_num</td>
+                <td><strong>订单创建人</strong></td>
+                <td colspan="2">@ViewBag.creater</td>
+                <td><strong>创建时间</strong></td>
+                <td colspan="2">@ViewBag.create_time</td>
+            </tr>
+            <tr>
+                <td><strong>出库单号</strong></td>
+                <td colspan="2">@ViewBag.Out_num</td>
+                <td><strong>订单审核人</strong></td>
+                <td colspan="2">@ViewBag.checker</td>
+                <td><strong>出库时间</strong></td>
+                <td colspan="2">@ViewBag.end_time</td>
+            </tr>
+            <tr>
+                <td><strong>状态</strong></td>
+                @if (@ViewBag.state == "已出库")
+                {
+                    <td colspan="8" style="color:green">@ViewBag.state</td>
+                }
+                else
+                {
+                    <td colspan="8" style="color:red">@ViewBag.state</td>
+                }
+            </tr>
+        </table>
+        <table class="layui-table" id="tabInfo">
+            <thead>
+                <tr>
+                    <th>出库商品名称</th>
+                    <th>出库商品单价</th>
+                    <th>出库商品总价</th>
+                    <th>出库数量</th>
+                    <th>商品单位</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@ViewBag.product_name</td>
+                    <td>@ViewBag.in_price 元</td>
+                    <td>@ViewBag.total_price 元</td>
+                    <td>@ViewBag.total_num</td>
+                    <td>@ViewBag.unit</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

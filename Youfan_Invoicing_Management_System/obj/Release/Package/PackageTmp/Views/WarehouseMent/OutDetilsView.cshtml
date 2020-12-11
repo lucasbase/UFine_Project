@@ -1,0 +1,89 @@
+﻿
+@{
+    Layout = null;
+}
+@model IList<Youfan_Invoicing_Management_System.Models.order_model>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>补货单详情</title>
+    <link href="~/Content/assets/css/layui.css" rel="stylesheet" />
+    <style>
+        .layui-table-cell .layui-form-checkbox[lay-skin="primary"] {
+            transform: translateY(20%);
+        }
+
+        .layui-table-box.layui-table-header.layui-table {
+            text-align: center
+        }
+        /*设置数据表表头字体*/
+        .layui-table th {
+            /*表头内容居中显示*/
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <button style="position:fixed;z-index:1000;left:790px" id="Print" class="layui-btn layui-btn-normal" onclick="PrintOutDetils()" value="打印">打印报表</button>
+    <div id="print">
+        <div>
+            <table class="layui-table">
+                <tr>
+                    <td colspan="12"><strong>优梵服装有限公司</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>出库单号</strong></td>
+                    <td colspan="2">@ViewBag.Out_num</td>
+                    <td><strong>订单审核人</strong></td>
+                    <td colspan="2">@ViewBag.checker</td>
+                    <td><strong>出库时间</strong></td>
+                    <td colspan="2">@ViewBag.end_time</td>
+                </tr>
+                <tr>
+                    <td><strong>总价</strong></td>
+                    <td colspan="2">@ViewBag.total_price 元</td>
+                    <td><strong>总数</strong></td>
+                    <td colspan="2">@ViewBag.total_num</td>
+                    <td><strong>状态</strong></td>
+                    <td colspan="2" style="color:green">@ViewBag.state</td>
+                </tr>
+            </table>
+            <table class="layui-table" id="tabInfo">
+                <thead>
+                    <tr>
+                        <th style="text-align:center">申请人</th>
+                        <th style="text-align:center">申请时间</th>
+                        <th style="text-align:center">出库商品名称</th>
+                        <th style="text-align:center">出库商品单价</th>
+                        <th style="text-align:center">出库商品总价</th>
+                        <th style="text-align:center">出库数量</th>
+                        <th style="text-align:center">商品单位</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.emp.emp_name </td>
+                            <td>@item.create_time 元</td>
+                            <td>@item.product.product_name </td>
+                            <td>@item.product.in_price 元</td>
+                            <td>@item.total_price 元</td>
+                            <td>@item.total_num</td>
+                            <td>@item.product.unit</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="~/Scripts/jquery-1.4.4.min.js"></script>
+    <script src="~/Scripts/jquery.jqprint-0.3.js"></script>
+    <script language="javascript">
+        function PrintOutDetils() {
+            $("#print").jqprint();
+        }
+    </script>
+</body>
+</html>

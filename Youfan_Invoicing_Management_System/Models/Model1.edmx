@@ -1,0 +1,1318 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="ERPModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="dep">
+          <Key>
+            <PropertyRef Name="dep_id" />
+          </Key>
+          <Property Name="dep_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="dep_name" Type="nvarchar" MaxLength="50" />
+          <Property Name="tel" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="emp">
+          <Key>
+            <PropertyRef Name="emp_id" />
+          </Key>
+          <Property Name="emp_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="role_id" Type="int" />
+          <Property Name="emp_name" Type="nvarchar" MaxLength="50" />
+          <Property Name="username" Type="nvarchar" MaxLength="50" />
+          <Property Name="email" Type="nvarchar" MaxLength="50" />
+          <Property Name="tel" Type="nvarchar" MaxLength="30" />
+          <Property Name="gender" Type="bit" />
+          <Property Name="address" Type="nvarchar" MaxLength="50" />
+          <Property Name="birthday" Type="date" />
+          <Property Name="password" Type="nvarchar" MaxLength="32" />
+          <Property Name="IsFrozen" Type="bit" />
+        </EntityType>
+        <EntityType Name="menu">
+          <Key>
+            <PropertyRef Name="menu_id" />
+          </Key>
+          <Property Name="menu_id" Type="int" Nullable="false" />
+          <Property Name="parent_menu_id" Type="int" />
+          <Property Name="menu_name" Type="nvarchar" MaxLength="20" />
+          <Property Name="url" Type="nvarchar" MaxLength="255" />
+          <Property Name="icon" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="order_detail">
+          <Key>
+            <PropertyRef Name="order_detail_id" />
+          </Key>
+          <Property Name="order_detail_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="detail_num" Type="int" />
+          <Property Name="detail_price" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="product_id" Type="int" />
+          <Property Name="order_id" Type="int" />
+          <Property Name="order_type_id" Type="int" />
+        </EntityType>
+        <EntityType Name="order_model">
+          <Key>
+            <PropertyRef Name="order_id" />
+          </Key>
+          <Property Name="order_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="order_num" Type="nvarchar" MaxLength="30" />
+          <Property Name="creater" Type="int" />
+          <Property Name="create_time" Type="datetime" />
+          <Property Name="checker" Type="int" />
+          <Property Name="end_time" Type="datetime" />
+          <Property Name="OutIn_number" Type="nvarchar" MaxLength="50" />
+          <Property Name="order_type_id" Type="int" />
+          <Property Name="order_state" Type="bit" />
+          <Property Name="product_id" Type="int" />
+          <Property Name="total_num" Type="int" />
+          <Property Name="total_price" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="supplier_id" Type="int" />
+        </EntityType>
+        <EntityType Name="order_type">
+          <Key>
+            <PropertyRef Name="order_type_id" />
+          </Key>
+          <Property Name="order_type_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="order_type_name" Type="nvarchar" MaxLength="20" />
+        </EntityType>
+        <EntityType Name="product">
+          <Key>
+            <PropertyRef Name="product_id" />
+          </Key>
+          <Property Name="product_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="product_type_id" Type="int" />
+          <Property Name="product_name" Type="nvarchar" MaxLength="30" />
+          <Property Name="producer" Type="nvarchar" MaxLength="30" />
+          <Property Name="unit" Type="nvarchar" MaxLength="30" />
+          <Property Name="in_price" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="pro_Inventory" Type="int" />
+          <Property Name="Shelves" Type="bit" />
+        </EntityType>
+        <EntityType Name="product_type">
+          <Key>
+            <PropertyRef Name="product_type_id" />
+          </Key>
+          <Property Name="product_type_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="supplier_id" Type="int" />
+          <Property Name="product_type_name" Type="nvarchar" MaxLength="30" />
+        </EntityType>
+        <EntityType Name="relation_emp_menu">
+          <Key>
+            <PropertyRef Name="relation_id" />
+          </Key>
+          <Property Name="relation_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="emp_id" Type="int" />
+          <Property Name="menu_id" Type="int" />
+        </EntityType>
+        <EntityType Name="relation_role_menu">
+          <Key>
+            <PropertyRef Name="relation_id" />
+          </Key>
+          <Property Name="relation_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="role_id" Type="int" />
+          <Property Name="menu_id" Type="int" />
+        </EntityType>
+        <EntityType Name="role">
+          <Key>
+            <PropertyRef Name="role_id" />
+          </Key>
+          <Property Name="role_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="role_name" Type="nvarchar" MaxLength="30" />
+          <Property Name="dep_id" Type="int" />
+        </EntityType>
+        <EntityType Name="store">
+          <Key>
+            <PropertyRef Name="store_id" />
+          </Key>
+          <Property Name="store_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="store_name" Type="nvarchar" MaxLength="30" />
+          <Property Name="address" Type="nvarchar" MaxLength="30" />
+        </EntityType>
+        <EntityType Name="store_detail">
+          <Key>
+            <PropertyRef Name="detail_id" />
+          </Key>
+          <Property Name="detail_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="store_id" Type="int" />
+          <Property Name="product_id" Type="int" />
+          <Property Name="num" Type="int" />
+        </EntityType>
+        <EntityType Name="store_log">
+          <Key>
+            <PropertyRef Name="log_id" />
+          </Key>
+          <Property Name="log_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="emp_id" Type="int" />
+          <Property Name="order_id" Type="int" />
+          <Property Name="oper_time" Type="datetime" />
+          <Property Name="num" Type="int" />
+          <Property Name="order_type_id" Type="int" />
+        </EntityType>
+        <EntityType Name="supplier">
+          <Key>
+            <PropertyRef Name="supplier_id" />
+          </Key>
+          <Property Name="supplier_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="supplier_name" Type="nvarchar" MaxLength="30" />
+          <Property Name="address" Type="nvarchar" MaxLength="50" />
+          <Property Name="contact" Type="nvarchar" MaxLength="30" />
+          <Property Name="tel" Type="nvarchar" MaxLength="30" />
+        </EntityType>
+        <Association Name="FK_emp_role">
+          <End Role="role" Type="Self.role" Multiplicity="0..1" />
+          <End Role="emp" Type="Self.emp" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="role">
+              <PropertyRef Name="role_id" />
+            </Principal>
+            <Dependent Role="emp">
+              <PropertyRef Name="role_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_order_detail_order_type">
+          <End Role="order_type" Type="Self.order_type" Multiplicity="0..1" />
+          <End Role="order_detail" Type="Self.order_detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="order_type">
+              <PropertyRef Name="order_type_id" />
+            </Principal>
+            <Dependent Role="order_detail">
+              <PropertyRef Name="order_type_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_order_detail_product">
+          <End Role="product" Type="Self.product" Multiplicity="0..1" />
+          <End Role="order_detail" Type="Self.order_detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="product">
+              <PropertyRef Name="product_id" />
+            </Principal>
+            <Dependent Role="order_detail">
+              <PropertyRef Name="product_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_order_model_emp">
+          <End Role="emp" Type="Self.emp" Multiplicity="0..1" />
+          <End Role="order_model" Type="Self.order_model" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="emp">
+              <PropertyRef Name="emp_id" />
+            </Principal>
+            <Dependent Role="order_model">
+              <PropertyRef Name="creater" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_order_model_emp1">
+          <End Role="emp" Type="Self.emp" Multiplicity="0..1" />
+          <End Role="order_model" Type="Self.order_model" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="emp">
+              <PropertyRef Name="emp_id" />
+            </Principal>
+            <Dependent Role="order_model">
+              <PropertyRef Name="checker" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_order_model_order_type">
+          <End Role="order_type" Type="Self.order_type" Multiplicity="0..1" />
+          <End Role="order_model" Type="Self.order_model" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="order_type">
+              <PropertyRef Name="order_type_id" />
+            </Principal>
+            <Dependent Role="order_model">
+              <PropertyRef Name="order_type_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_order_model_product">
+          <End Role="product" Type="Self.product" Multiplicity="0..1" />
+          <End Role="order_model" Type="Self.order_model" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="product">
+              <PropertyRef Name="product_id" />
+            </Principal>
+            <Dependent Role="order_model">
+              <PropertyRef Name="product_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_order_model_supplier">
+          <End Role="supplier" Type="Self.supplier" Multiplicity="0..1" />
+          <End Role="order_model" Type="Self.order_model" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="supplier">
+              <PropertyRef Name="supplier_id" />
+            </Principal>
+            <Dependent Role="order_model">
+              <PropertyRef Name="supplier_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_product_product_type">
+          <End Role="product_type" Type="Self.product_type" Multiplicity="0..1" />
+          <End Role="product" Type="Self.product" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="product_type">
+              <PropertyRef Name="product_type_id" />
+            </Principal>
+            <Dependent Role="product">
+              <PropertyRef Name="product_type_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_product_type_supplier">
+          <End Role="supplier" Type="Self.supplier" Multiplicity="0..1" />
+          <End Role="product_type" Type="Self.product_type" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="supplier">
+              <PropertyRef Name="supplier_id" />
+            </Principal>
+            <Dependent Role="product_type">
+              <PropertyRef Name="supplier_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_relation_emp_menu_emp">
+          <End Role="emp" Type="Self.emp" Multiplicity="0..1" />
+          <End Role="relation_emp_menu" Type="Self.relation_emp_menu" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="emp">
+              <PropertyRef Name="emp_id" />
+            </Principal>
+            <Dependent Role="relation_emp_menu">
+              <PropertyRef Name="emp_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_relation_emp_menu_menu">
+          <End Role="menu" Type="Self.menu" Multiplicity="0..1" />
+          <End Role="relation_emp_menu" Type="Self.relation_emp_menu" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="menu">
+              <PropertyRef Name="menu_id" />
+            </Principal>
+            <Dependent Role="relation_emp_menu">
+              <PropertyRef Name="menu_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_relation_role_menu_menu">
+          <End Role="menu" Type="Self.menu" Multiplicity="0..1" />
+          <End Role="relation_role_menu" Type="Self.relation_role_menu" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="menu">
+              <PropertyRef Name="menu_id" />
+            </Principal>
+            <Dependent Role="relation_role_menu">
+              <PropertyRef Name="menu_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_relation_role_menu_role">
+          <End Role="role" Type="Self.role" Multiplicity="0..1" />
+          <End Role="relation_role_menu" Type="Self.relation_role_menu" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="role">
+              <PropertyRef Name="role_id" />
+            </Principal>
+            <Dependent Role="relation_role_menu">
+              <PropertyRef Name="role_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_role_dep">
+          <End Role="dep" Type="Self.dep" Multiplicity="0..1" />
+          <End Role="role" Type="Self.role" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="dep">
+              <PropertyRef Name="dep_id" />
+            </Principal>
+            <Dependent Role="role">
+              <PropertyRef Name="dep_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_store_detail_product">
+          <End Role="product" Type="Self.product" Multiplicity="0..1" />
+          <End Role="store_detail" Type="Self.store_detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="product">
+              <PropertyRef Name="product_id" />
+            </Principal>
+            <Dependent Role="store_detail">
+              <PropertyRef Name="product_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_store_detail_store">
+          <End Role="store" Type="Self.store" Multiplicity="0..1" />
+          <End Role="store_detail" Type="Self.store_detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="store">
+              <PropertyRef Name="store_id" />
+            </Principal>
+            <Dependent Role="store_detail">
+              <PropertyRef Name="store_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_store_log_emp">
+          <End Role="emp" Type="Self.emp" Multiplicity="0..1" />
+          <End Role="store_log" Type="Self.store_log" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="emp">
+              <PropertyRef Name="emp_id" />
+            </Principal>
+            <Dependent Role="store_log">
+              <PropertyRef Name="emp_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_store_log_order_model">
+          <End Role="order_model" Type="Self.order_model" Multiplicity="0..1" />
+          <End Role="store_log" Type="Self.store_log" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="order_model">
+              <PropertyRef Name="order_id" />
+            </Principal>
+            <Dependent Role="store_log">
+              <PropertyRef Name="order_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_store_log_order_type">
+          <End Role="order_type" Type="Self.order_type" Multiplicity="0..1" />
+          <End Role="store_log" Type="Self.store_log" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="order_type">
+              <PropertyRef Name="order_type_id" />
+            </Principal>
+            <Dependent Role="store_log">
+              <PropertyRef Name="order_type_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="proc_SelAll" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <EntityContainer Name="ERPModelStoreContainer">
+          <EntitySet Name="dep" EntityType="Self.dep" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="emp" EntityType="Self.emp" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="menu" EntityType="Self.menu" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="order_detail" EntityType="Self.order_detail" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="order_model" EntityType="Self.order_model" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="order_type" EntityType="Self.order_type" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="product" EntityType="Self.product" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="product_type" EntityType="Self.product_type" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="relation_emp_menu" EntityType="Self.relation_emp_menu" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="relation_role_menu" EntityType="Self.relation_role_menu" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="role" EntityType="Self.role" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="store" EntityType="Self.store" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="store_detail" EntityType="Self.store_detail" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="store_log" EntityType="Self.store_log" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="supplier" EntityType="Self.supplier" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_emp_role" Association="Self.FK_emp_role">
+            <End Role="role" EntitySet="role" />
+            <End Role="emp" EntitySet="emp" />
+          </AssociationSet>
+          <AssociationSet Name="FK_order_detail_order_type" Association="Self.FK_order_detail_order_type">
+            <End Role="order_type" EntitySet="order_type" />
+            <End Role="order_detail" EntitySet="order_detail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_order_detail_product" Association="Self.FK_order_detail_product">
+            <End Role="product" EntitySet="product" />
+            <End Role="order_detail" EntitySet="order_detail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_order_model_emp" Association="Self.FK_order_model_emp">
+            <End Role="emp" EntitySet="emp" />
+            <End Role="order_model" EntitySet="order_model" />
+          </AssociationSet>
+          <AssociationSet Name="FK_order_model_emp1" Association="Self.FK_order_model_emp1">
+            <End Role="emp" EntitySet="emp" />
+            <End Role="order_model" EntitySet="order_model" />
+          </AssociationSet>
+          <AssociationSet Name="FK_order_model_order_type" Association="Self.FK_order_model_order_type">
+            <End Role="order_type" EntitySet="order_type" />
+            <End Role="order_model" EntitySet="order_model" />
+          </AssociationSet>
+          <AssociationSet Name="FK_order_model_product" Association="Self.FK_order_model_product">
+            <End Role="product" EntitySet="product" />
+            <End Role="order_model" EntitySet="order_model" />
+          </AssociationSet>
+          <AssociationSet Name="FK_order_model_supplier" Association="Self.FK_order_model_supplier">
+            <End Role="supplier" EntitySet="supplier" />
+            <End Role="order_model" EntitySet="order_model" />
+          </AssociationSet>
+          <AssociationSet Name="FK_product_product_type" Association="Self.FK_product_product_type">
+            <End Role="product_type" EntitySet="product_type" />
+            <End Role="product" EntitySet="product" />
+          </AssociationSet>
+          <AssociationSet Name="FK_product_type_supplier" Association="Self.FK_product_type_supplier">
+            <End Role="supplier" EntitySet="supplier" />
+            <End Role="product_type" EntitySet="product_type" />
+          </AssociationSet>
+          <AssociationSet Name="FK_relation_emp_menu_emp" Association="Self.FK_relation_emp_menu_emp">
+            <End Role="emp" EntitySet="emp" />
+            <End Role="relation_emp_menu" EntitySet="relation_emp_menu" />
+          </AssociationSet>
+          <AssociationSet Name="FK_relation_emp_menu_menu" Association="Self.FK_relation_emp_menu_menu">
+            <End Role="menu" EntitySet="menu" />
+            <End Role="relation_emp_menu" EntitySet="relation_emp_menu" />
+          </AssociationSet>
+          <AssociationSet Name="FK_relation_role_menu_menu" Association="Self.FK_relation_role_menu_menu">
+            <End Role="menu" EntitySet="menu" />
+            <End Role="relation_role_menu" EntitySet="relation_role_menu" />
+          </AssociationSet>
+          <AssociationSet Name="FK_relation_role_menu_role" Association="Self.FK_relation_role_menu_role">
+            <End Role="role" EntitySet="role" />
+            <End Role="relation_role_menu" EntitySet="relation_role_menu" />
+          </AssociationSet>
+          <AssociationSet Name="FK_role_dep" Association="Self.FK_role_dep">
+            <End Role="dep" EntitySet="dep" />
+            <End Role="role" EntitySet="role" />
+          </AssociationSet>
+          <AssociationSet Name="FK_store_detail_product" Association="Self.FK_store_detail_product">
+            <End Role="product" EntitySet="product" />
+            <End Role="store_detail" EntitySet="store_detail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_store_detail_store" Association="Self.FK_store_detail_store">
+            <End Role="store" EntitySet="store" />
+            <End Role="store_detail" EntitySet="store_detail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_store_log_emp" Association="Self.FK_store_log_emp">
+            <End Role="emp" EntitySet="emp" />
+            <End Role="store_log" EntitySet="store_log" />
+          </AssociationSet>
+          <AssociationSet Name="FK_store_log_order_model" Association="Self.FK_store_log_order_model">
+            <End Role="order_model" EntitySet="order_model" />
+            <End Role="store_log" EntitySet="store_log" />
+          </AssociationSet>
+          <AssociationSet Name="FK_store_log_order_type" Association="Self.FK_store_log_order_type">
+            <End Role="order_type" EntitySet="order_type" />
+            <End Role="store_log" EntitySet="store_log" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="ERPModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="dep">
+          <Key>
+            <PropertyRef Name="dep_id" />
+          </Key>
+          <Property Name="dep_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="dep_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="tel" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="role" Relationship="Self.FK_role_dep" FromRole="dep" ToRole="role" />
+        </EntityType>
+        <EntityType Name="emp">
+          <Key>
+            <PropertyRef Name="emp_id" />
+          </Key>
+          <Property Name="emp_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="role_id" Type="Int32" />
+          <Property Name="emp_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="tel" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="gender" Type="Boolean" />
+          <Property Name="address" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="birthday" Type="DateTime" Precision="0" />
+          <Property Name="password" Type="String" MaxLength="32" FixedLength="false" Unicode="true" />
+          <Property Name="IsFrozen" Type="Boolean" />
+          <NavigationProperty Name="role" Relationship="Self.FK_emp_role" FromRole="emp" ToRole="role" />
+          <NavigationProperty Name="order_model" Relationship="Self.FK_order_model_emp" FromRole="emp" ToRole="order_model" />
+          <NavigationProperty Name="order_model1" Relationship="Self.FK_order_model_emp1" FromRole="emp" ToRole="order_model" />
+          <NavigationProperty Name="relation_emp_menu" Relationship="Self.FK_relation_emp_menu_emp" FromRole="emp" ToRole="relation_emp_menu" />
+          <NavigationProperty Name="store_log" Relationship="Self.FK_store_log_emp" FromRole="emp" ToRole="store_log" />
+        </EntityType>
+        <EntityType Name="menu">
+          <Key>
+            <PropertyRef Name="menu_id" />
+          </Key>
+          <Property Name="menu_id" Type="Int32" Nullable="false" />
+          <Property Name="parent_menu_id" Type="Int32" />
+          <Property Name="menu_name" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="url" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="icon" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="relation_emp_menu" Relationship="Self.FK_relation_emp_menu_menu" FromRole="menu" ToRole="relation_emp_menu" />
+          <NavigationProperty Name="relation_role_menu" Relationship="Self.FK_relation_role_menu_menu" FromRole="menu" ToRole="relation_role_menu" />
+        </EntityType>
+        <EntityType Name="order_detail">
+          <Key>
+            <PropertyRef Name="order_detail_id" />
+          </Key>
+          <Property Name="order_detail_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="detail_num" Type="Int32" />
+          <Property Name="detail_price" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="product_id" Type="Int32" />
+          <Property Name="order_id" Type="Int32" />
+          <Property Name="order_type_id" Type="Int32" />
+          <NavigationProperty Name="order_type" Relationship="Self.FK_order_detail_order_type" FromRole="order_detail" ToRole="order_type" />
+          <NavigationProperty Name="product" Relationship="Self.FK_order_detail_product" FromRole="order_detail" ToRole="product" />
+        </EntityType>
+        <EntityType Name="order_model">
+          <Key>
+            <PropertyRef Name="order_id" />
+          </Key>
+          <Property Name="order_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="order_num" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="creater" Type="Int32" />
+          <Property Name="create_time" Type="DateTime" Precision="3" />
+          <Property Name="checker" Type="Int32" />
+          <Property Name="end_time" Type="DateTime" Precision="3" />
+          <Property Name="OutIn_number" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="order_type_id" Type="Int32" />
+          <Property Name="order_state" Type="Boolean" />
+          <Property Name="product_id" Type="Int32" />
+          <Property Name="total_num" Type="Int32" />
+          <Property Name="total_price" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="supplier_id" Type="Int32" />
+          <NavigationProperty Name="emp" Relationship="Self.FK_order_model_emp" FromRole="order_model" ToRole="emp" />
+          <NavigationProperty Name="emp1" Relationship="Self.FK_order_model_emp1" FromRole="order_model" ToRole="emp" />
+          <NavigationProperty Name="order_type" Relationship="Self.FK_order_model_order_type" FromRole="order_model" ToRole="order_type" />
+          <NavigationProperty Name="product" Relationship="Self.FK_order_model_product" FromRole="order_model" ToRole="product" />
+          <NavigationProperty Name="supplier" Relationship="Self.FK_order_model_supplier" FromRole="order_model" ToRole="supplier" />
+          <NavigationProperty Name="store_log" Relationship="Self.FK_store_log_order_model" FromRole="order_model" ToRole="store_log" />
+        </EntityType>
+        <EntityType Name="order_type">
+          <Key>
+            <PropertyRef Name="order_type_id" />
+          </Key>
+          <Property Name="order_type_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="order_type_name" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="order_detail" Relationship="Self.FK_order_detail_order_type" FromRole="order_type" ToRole="order_detail" />
+          <NavigationProperty Name="order_model" Relationship="Self.FK_order_model_order_type" FromRole="order_type" ToRole="order_model" />
+          <NavigationProperty Name="store_log" Relationship="Self.FK_store_log_order_type" FromRole="order_type" ToRole="store_log" />
+        </EntityType>
+        <EntityType Name="product">
+          <Key>
+            <PropertyRef Name="product_id" />
+          </Key>
+          <Property Name="product_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="product_type_id" Type="Int32" />
+          <Property Name="product_name" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="producer" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="unit" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="in_price" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="pro_Inventory" Type="Int32" />
+          <Property Name="Shelves" Type="Boolean" />
+          <NavigationProperty Name="order_detail" Relationship="Self.FK_order_detail_product" FromRole="product" ToRole="order_detail" />
+          <NavigationProperty Name="order_model" Relationship="Self.FK_order_model_product" FromRole="product" ToRole="order_model" />
+          <NavigationProperty Name="product_type" Relationship="Self.FK_product_product_type" FromRole="product" ToRole="product_type" />
+          <NavigationProperty Name="store_detail" Relationship="Self.FK_store_detail_product" FromRole="product" ToRole="store_detail" />
+        </EntityType>
+        <EntityType Name="product_type">
+          <Key>
+            <PropertyRef Name="product_type_id" />
+          </Key>
+          <Property Name="product_type_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="supplier_id" Type="Int32" />
+          <Property Name="product_type_name" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="product" Relationship="Self.FK_product_product_type" FromRole="product_type" ToRole="product" />
+          <NavigationProperty Name="supplier" Relationship="Self.FK_product_type_supplier" FromRole="product_type" ToRole="supplier" />
+        </EntityType>
+        <EntityType Name="relation_emp_menu">
+          <Key>
+            <PropertyRef Name="relation_id" />
+          </Key>
+          <Property Name="relation_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="emp_id" Type="Int32" />
+          <Property Name="menu_id" Type="Int32" />
+          <NavigationProperty Name="emp" Relationship="Self.FK_relation_emp_menu_emp" FromRole="relation_emp_menu" ToRole="emp" />
+          <NavigationProperty Name="menu" Relationship="Self.FK_relation_emp_menu_menu" FromRole="relation_emp_menu" ToRole="menu" />
+        </EntityType>
+        <EntityType Name="relation_role_menu">
+          <Key>
+            <PropertyRef Name="relation_id" />
+          </Key>
+          <Property Name="relation_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="role_id" Type="Int32" />
+          <Property Name="menu_id" Type="Int32" />
+          <NavigationProperty Name="menu" Relationship="Self.FK_relation_role_menu_menu" FromRole="relation_role_menu" ToRole="menu" />
+          <NavigationProperty Name="role" Relationship="Self.FK_relation_role_menu_role" FromRole="relation_role_menu" ToRole="role" />
+        </EntityType>
+        <EntityType Name="role">
+          <Key>
+            <PropertyRef Name="role_id" />
+          </Key>
+          <Property Name="role_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="role_name" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="dep_id" Type="Int32" />
+          <NavigationProperty Name="dep" Relationship="Self.FK_role_dep" FromRole="role" ToRole="dep" />
+          <NavigationProperty Name="emp" Relationship="Self.FK_emp_role" FromRole="role" ToRole="emp" />
+          <NavigationProperty Name="relation_role_menu" Relationship="Self.FK_relation_role_menu_role" FromRole="role" ToRole="relation_role_menu" />
+        </EntityType>
+        <EntityType Name="store">
+          <Key>
+            <PropertyRef Name="store_id" />
+          </Key>
+          <Property Name="store_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="store_name" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="address" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="store_detail" Relationship="Self.FK_store_detail_store" FromRole="store" ToRole="store_detail" />
+        </EntityType>
+        <EntityType Name="store_detail">
+          <Key>
+            <PropertyRef Name="detail_id" />
+          </Key>
+          <Property Name="detail_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="store_id" Type="Int32" />
+          <Property Name="product_id" Type="Int32" />
+          <Property Name="num" Type="Int32" />
+          <NavigationProperty Name="product" Relationship="Self.FK_store_detail_product" FromRole="store_detail" ToRole="product" />
+          <NavigationProperty Name="store" Relationship="Self.FK_store_detail_store" FromRole="store_detail" ToRole="store" />
+        </EntityType>
+        <EntityType Name="store_log">
+          <Key>
+            <PropertyRef Name="log_id" />
+          </Key>
+          <Property Name="log_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="emp_id" Type="Int32" />
+          <Property Name="order_id" Type="Int32" />
+          <Property Name="oper_time" Type="DateTime" Precision="3" />
+          <Property Name="num" Type="Int32" />
+          <Property Name="order_type_id" Type="Int32" />
+          <NavigationProperty Name="emp" Relationship="Self.FK_store_log_emp" FromRole="store_log" ToRole="emp" />
+          <NavigationProperty Name="order_model" Relationship="Self.FK_store_log_order_model" FromRole="store_log" ToRole="order_model" />
+          <NavigationProperty Name="order_type" Relationship="Self.FK_store_log_order_type" FromRole="store_log" ToRole="order_type" />
+        </EntityType>
+        <EntityType Name="supplier">
+          <Key>
+            <PropertyRef Name="supplier_id" />
+          </Key>
+          <Property Name="supplier_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="supplier_name" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="address" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="contact" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="tel" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="order_model" Relationship="Self.FK_order_model_supplier" FromRole="supplier" ToRole="order_model" />
+          <NavigationProperty Name="product_type" Relationship="Self.FK_product_type_supplier" FromRole="supplier" ToRole="product_type" />
+        </EntityType>
+        <Association Name="FK_role_dep">
+          <End Role="dep" Type="Self.dep" Multiplicity="0..1" />
+          <End Role="role" Type="Self.role" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="dep">
+              <PropertyRef Name="dep_id" />
+            </Principal>
+            <Dependent Role="role">
+              <PropertyRef Name="dep_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_emp_role">
+          <End Role="role" Type="Self.role" Multiplicity="0..1" />
+          <End Role="emp" Type="Self.emp" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="role">
+              <PropertyRef Name="role_id" />
+            </Principal>
+            <Dependent Role="emp">
+              <PropertyRef Name="role_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_order_model_emp">
+          <End Role="emp" Type="Self.emp" Multiplicity="0..1" />
+          <End Role="order_model" Type="Self.order_model" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="emp">
+              <PropertyRef Name="emp_id" />
+            </Principal>
+            <Dependent Role="order_model">
+              <PropertyRef Name="creater" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_order_model_emp1">
+          <End Role="emp" Type="Self.emp" Multiplicity="0..1" />
+          <End Role="order_model" Type="Self.order_model" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="emp">
+              <PropertyRef Name="emp_id" />
+            </Principal>
+            <Dependent Role="order_model">
+              <PropertyRef Name="checker" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_relation_emp_menu_emp">
+          <End Role="emp" Type="Self.emp" Multiplicity="0..1" />
+          <End Role="relation_emp_menu" Type="Self.relation_emp_menu" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="emp">
+              <PropertyRef Name="emp_id" />
+            </Principal>
+            <Dependent Role="relation_emp_menu">
+              <PropertyRef Name="emp_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_store_log_emp">
+          <End Role="emp" Type="Self.emp" Multiplicity="0..1" />
+          <End Role="store_log" Type="Self.store_log" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="emp">
+              <PropertyRef Name="emp_id" />
+            </Principal>
+            <Dependent Role="store_log">
+              <PropertyRef Name="emp_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_relation_emp_menu_menu">
+          <End Role="menu" Type="Self.menu" Multiplicity="0..1" />
+          <End Role="relation_emp_menu" Type="Self.relation_emp_menu" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="menu">
+              <PropertyRef Name="menu_id" />
+            </Principal>
+            <Dependent Role="relation_emp_menu">
+              <PropertyRef Name="menu_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_relation_role_menu_menu">
+          <End Role="menu" Type="Self.menu" Multiplicity="0..1" />
+          <End Role="relation_role_menu" Type="Self.relation_role_menu" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="menu">
+              <PropertyRef Name="menu_id" />
+            </Principal>
+            <Dependent Role="relation_role_menu">
+              <PropertyRef Name="menu_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_order_detail_order_type">
+          <End Role="order_type" Type="Self.order_type" Multiplicity="0..1" />
+          <End Role="order_detail" Type="Self.order_detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="order_type">
+              <PropertyRef Name="order_type_id" />
+            </Principal>
+            <Dependent Role="order_detail">
+              <PropertyRef Name="order_type_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_order_detail_product">
+          <End Role="product" Type="Self.product" Multiplicity="0..1" />
+          <End Role="order_detail" Type="Self.order_detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="product">
+              <PropertyRef Name="product_id" />
+            </Principal>
+            <Dependent Role="order_detail">
+              <PropertyRef Name="product_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_order_model_order_type">
+          <End Role="order_type" Type="Self.order_type" Multiplicity="0..1" />
+          <End Role="order_model" Type="Self.order_model" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="order_type">
+              <PropertyRef Name="order_type_id" />
+            </Principal>
+            <Dependent Role="order_model">
+              <PropertyRef Name="order_type_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_order_model_product">
+          <End Role="product" Type="Self.product" Multiplicity="0..1" />
+          <End Role="order_model" Type="Self.order_model" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="product">
+              <PropertyRef Name="product_id" />
+            </Principal>
+            <Dependent Role="order_model">
+              <PropertyRef Name="product_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_order_model_supplier">
+          <End Role="supplier" Type="Self.supplier" Multiplicity="0..1" />
+          <End Role="order_model" Type="Self.order_model" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="supplier">
+              <PropertyRef Name="supplier_id" />
+            </Principal>
+            <Dependent Role="order_model">
+              <PropertyRef Name="supplier_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_store_log_order_model">
+          <End Role="order_model" Type="Self.order_model" Multiplicity="0..1" />
+          <End Role="store_log" Type="Self.store_log" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="order_model">
+              <PropertyRef Name="order_id" />
+            </Principal>
+            <Dependent Role="store_log">
+              <PropertyRef Name="order_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_store_log_order_type">
+          <End Role="order_type" Type="Self.order_type" Multiplicity="0..1" />
+          <End Role="store_log" Type="Self.store_log" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="order_type">
+              <PropertyRef Name="order_type_id" />
+            </Principal>
+            <Dependent Role="store_log">
+              <PropertyRef Name="order_type_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_product_product_type">
+          <End Role="product_type" Type="Self.product_type" Multiplicity="0..1" />
+          <End Role="product" Type="Self.product" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="product_type">
+              <PropertyRef Name="product_type_id" />
+            </Principal>
+            <Dependent Role="product">
+              <PropertyRef Name="product_type_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_store_detail_product">
+          <End Role="product" Type="Self.product" Multiplicity="0..1" />
+          <End Role="store_detail" Type="Self.store_detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="product">
+              <PropertyRef Name="product_id" />
+            </Principal>
+            <Dependent Role="store_detail">
+              <PropertyRef Name="product_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_product_type_supplier">
+          <End Role="supplier" Type="Self.supplier" Multiplicity="0..1" />
+          <End Role="product_type" Type="Self.product_type" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="supplier">
+              <PropertyRef Name="supplier_id" />
+            </Principal>
+            <Dependent Role="product_type">
+              <PropertyRef Name="supplier_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_relation_role_menu_role">
+          <End Role="role" Type="Self.role" Multiplicity="0..1" />
+          <End Role="relation_role_menu" Type="Self.relation_role_menu" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="role">
+              <PropertyRef Name="role_id" />
+            </Principal>
+            <Dependent Role="relation_role_menu">
+              <PropertyRef Name="role_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_store_detail_store">
+          <End Role="store" Type="Self.store" Multiplicity="0..1" />
+          <End Role="store_detail" Type="Self.store_detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="store">
+              <PropertyRef Name="store_id" />
+            </Principal>
+            <Dependent Role="store_detail">
+              <PropertyRef Name="store_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ERPEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="dep" EntityType="Self.dep" />
+          <EntitySet Name="emp" EntityType="Self.emp" />
+          <EntitySet Name="menu" EntityType="Self.menu" />
+          <EntitySet Name="order_detail" EntityType="Self.order_detail" />
+          <EntitySet Name="order_model" EntityType="Self.order_model" />
+          <EntitySet Name="order_type" EntityType="Self.order_type" />
+          <EntitySet Name="product" EntityType="Self.product" />
+          <EntitySet Name="product_type" EntityType="Self.product_type" />
+          <EntitySet Name="relation_emp_menu" EntityType="Self.relation_emp_menu" />
+          <EntitySet Name="relation_role_menu" EntityType="Self.relation_role_menu" />
+          <EntitySet Name="role" EntityType="Self.role" />
+          <EntitySet Name="store" EntityType="Self.store" />
+          <EntitySet Name="store_detail" EntityType="Self.store_detail" />
+          <EntitySet Name="store_log" EntityType="Self.store_log" />
+          <EntitySet Name="supplier" EntityType="Self.supplier" />
+          <AssociationSet Name="FK_role_dep" Association="Self.FK_role_dep">
+            <End Role="dep" EntitySet="dep" />
+            <End Role="role" EntitySet="role" />
+          </AssociationSet>
+          <AssociationSet Name="FK_emp_role" Association="Self.FK_emp_role">
+            <End Role="role" EntitySet="role" />
+            <End Role="emp" EntitySet="emp" />
+          </AssociationSet>
+          <AssociationSet Name="FK_order_model_emp" Association="Self.FK_order_model_emp">
+            <End Role="emp" EntitySet="emp" />
+            <End Role="order_model" EntitySet="order_model" />
+          </AssociationSet>
+          <AssociationSet Name="FK_order_model_emp1" Association="Self.FK_order_model_emp1">
+            <End Role="emp" EntitySet="emp" />
+            <End Role="order_model" EntitySet="order_model" />
+          </AssociationSet>
+          <AssociationSet Name="FK_relation_emp_menu_emp" Association="Self.FK_relation_emp_menu_emp">
+            <End Role="emp" EntitySet="emp" />
+            <End Role="relation_emp_menu" EntitySet="relation_emp_menu" />
+          </AssociationSet>
+          <AssociationSet Name="FK_store_log_emp" Association="Self.FK_store_log_emp">
+            <End Role="emp" EntitySet="emp" />
+            <End Role="store_log" EntitySet="store_log" />
+          </AssociationSet>
+          <AssociationSet Name="FK_relation_emp_menu_menu" Association="Self.FK_relation_emp_menu_menu">
+            <End Role="menu" EntitySet="menu" />
+            <End Role="relation_emp_menu" EntitySet="relation_emp_menu" />
+          </AssociationSet>
+          <AssociationSet Name="FK_relation_role_menu_menu" Association="Self.FK_relation_role_menu_menu">
+            <End Role="menu" EntitySet="menu" />
+            <End Role="relation_role_menu" EntitySet="relation_role_menu" />
+          </AssociationSet>
+          <AssociationSet Name="FK_order_detail_order_type" Association="Self.FK_order_detail_order_type">
+            <End Role="order_type" EntitySet="order_type" />
+            <End Role="order_detail" EntitySet="order_detail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_order_detail_product" Association="Self.FK_order_detail_product">
+            <End Role="product" EntitySet="product" />
+            <End Role="order_detail" EntitySet="order_detail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_order_model_order_type" Association="Self.FK_order_model_order_type">
+            <End Role="order_type" EntitySet="order_type" />
+            <End Role="order_model" EntitySet="order_model" />
+          </AssociationSet>
+          <AssociationSet Name="FK_order_model_product" Association="Self.FK_order_model_product">
+            <End Role="product" EntitySet="product" />
+            <End Role="order_model" EntitySet="order_model" />
+          </AssociationSet>
+          <AssociationSet Name="FK_order_model_supplier" Association="Self.FK_order_model_supplier">
+            <End Role="supplier" EntitySet="supplier" />
+            <End Role="order_model" EntitySet="order_model" />
+          </AssociationSet>
+          <AssociationSet Name="FK_store_log_order_model" Association="Self.FK_store_log_order_model">
+            <End Role="order_model" EntitySet="order_model" />
+            <End Role="store_log" EntitySet="store_log" />
+          </AssociationSet>
+          <AssociationSet Name="FK_store_log_order_type" Association="Self.FK_store_log_order_type">
+            <End Role="order_type" EntitySet="order_type" />
+            <End Role="store_log" EntitySet="store_log" />
+          </AssociationSet>
+          <AssociationSet Name="FK_product_product_type" Association="Self.FK_product_product_type">
+            <End Role="product_type" EntitySet="product_type" />
+            <End Role="product" EntitySet="product" />
+          </AssociationSet>
+          <AssociationSet Name="FK_store_detail_product" Association="Self.FK_store_detail_product">
+            <End Role="product" EntitySet="product" />
+            <End Role="store_detail" EntitySet="store_detail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_product_type_supplier" Association="Self.FK_product_type_supplier">
+            <End Role="supplier" EntitySet="supplier" />
+            <End Role="product_type" EntitySet="product_type" />
+          </AssociationSet>
+          <AssociationSet Name="FK_relation_role_menu_role" Association="Self.FK_relation_role_menu_role">
+            <End Role="role" EntitySet="role" />
+            <End Role="relation_role_menu" EntitySet="relation_role_menu" />
+          </AssociationSet>
+          <AssociationSet Name="FK_store_detail_store" Association="Self.FK_store_detail_store">
+            <End Role="store" EntitySet="store" />
+            <End Role="store_detail" EntitySet="store_detail" />
+          </AssociationSet>
+          <FunctionImport Name="proc_SelAll" ReturnType="Collection(ERPModel.proc_SelAll_Result)" />
+        </EntityContainer>
+        <ComplexType Name="proc_SelAll_Result">
+          <Property Type="Int32" Name="order_id" Nullable="false" />
+          <Property Type="String" Name="order_num" Nullable="true" MaxLength="30" />
+          <Property Type="Int32" Name="creater" Nullable="true" />
+          <Property Type="DateTime" Name="create_time" Nullable="true" Precision="23" />
+          <Property Type="Int32" Name="checker" Nullable="true" />
+          <Property Type="DateTime" Name="end_time" Nullable="true" Precision="23" />
+          <Property Type="String" Name="OutIn_number" Nullable="true" MaxLength="50" />
+          <Property Type="Int32" Name="order_type_id" Nullable="true" />
+          <Property Type="Boolean" Name="order_state" Nullable="true" />
+          <Property Type="Int32" Name="product_id" Nullable="true" />
+          <Property Type="Int32" Name="total_num" Nullable="true" />
+          <Property Type="Decimal" Name="total_price" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="Int32" Name="supplier_id" Nullable="true" />
+          <Property Type="Int32" Name="emp_id" Nullable="false" />
+          <Property Type="Int32" Name="role_id" Nullable="true" />
+          <Property Type="String" Name="emp_name" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="username" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="email" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="tel" Nullable="true" MaxLength="30" />
+          <Property Type="Boolean" Name="gender" Nullable="true" />
+          <Property Type="String" Name="address" Nullable="true" MaxLength="50" />
+          <Property Type="DateTime" Name="birthday" Nullable="true" />
+          <Property Type="String" Name="password" Nullable="true" MaxLength="32" />
+          <Property Type="Boolean" Name="IsFrozen" Nullable="true" />
+          <Property Type="Int32" Name="product_id1" Nullable="false" />
+          <Property Type="Int32" Name="product_type_id" Nullable="true" />
+          <Property Type="String" Name="product_name" Nullable="true" MaxLength="30" />
+          <Property Type="String" Name="producer" Nullable="true" MaxLength="30" />
+          <Property Type="String" Name="unit" Nullable="true" MaxLength="30" />
+          <Property Type="Decimal" Name="in_price" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="Int32" Name="pro_Inventory" Nullable="true" />
+          <Property Type="Boolean" Name="Shelves" Nullable="true" />
+          <Property Type="Int32" Name="order_type_id1" Nullable="false" />
+          <Property Type="String" Name="order_type_name" Nullable="true" MaxLength="20" />
+          <Property Type="Int32" Name="supplier_id1" Nullable="false" />
+          <Property Type="String" Name="supplier_name" Nullable="true" MaxLength="30" />
+          <Property Type="String" Name="address1" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="contact" Nullable="true" MaxLength="30" />
+          <Property Type="String" Name="tel1" Nullable="true" MaxLength="30" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="ERPModelStoreContainer" CdmEntityContainer="ERPEntities">
+          <EntitySetMapping Name="dep">
+            <EntityTypeMapping TypeName="ERPModel.dep">
+              <MappingFragment StoreEntitySet="dep">
+                <ScalarProperty Name="dep_id" ColumnName="dep_id" />
+                <ScalarProperty Name="dep_name" ColumnName="dep_name" />
+                <ScalarProperty Name="tel" ColumnName="tel" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="emp">
+            <EntityTypeMapping TypeName="ERPModel.emp">
+              <MappingFragment StoreEntitySet="emp">
+                <ScalarProperty Name="emp_id" ColumnName="emp_id" />
+                <ScalarProperty Name="role_id" ColumnName="role_id" />
+                <ScalarProperty Name="emp_name" ColumnName="emp_name" />
+                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="tel" ColumnName="tel" />
+                <ScalarProperty Name="gender" ColumnName="gender" />
+                <ScalarProperty Name="address" ColumnName="address" />
+                <ScalarProperty Name="birthday" ColumnName="birthday" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="IsFrozen" ColumnName="IsFrozen" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="menu">
+            <EntityTypeMapping TypeName="ERPModel.menu">
+              <MappingFragment StoreEntitySet="menu">
+                <ScalarProperty Name="menu_id" ColumnName="menu_id" />
+                <ScalarProperty Name="parent_menu_id" ColumnName="parent_menu_id" />
+                <ScalarProperty Name="menu_name" ColumnName="menu_name" />
+                <ScalarProperty Name="url" ColumnName="url" />
+                <ScalarProperty Name="icon" ColumnName="icon" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="order_detail">
+            <EntityTypeMapping TypeName="ERPModel.order_detail">
+              <MappingFragment StoreEntitySet="order_detail">
+                <ScalarProperty Name="order_detail_id" ColumnName="order_detail_id" />
+                <ScalarProperty Name="detail_num" ColumnName="detail_num" />
+                <ScalarProperty Name="detail_price" ColumnName="detail_price" />
+                <ScalarProperty Name="product_id" ColumnName="product_id" />
+                <ScalarProperty Name="order_id" ColumnName="order_id" />
+                <ScalarProperty Name="order_type_id" ColumnName="order_type_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="order_model">
+            <EntityTypeMapping TypeName="ERPModel.order_model">
+              <MappingFragment StoreEntitySet="order_model">
+                <ScalarProperty Name="order_id" ColumnName="order_id" />
+                <ScalarProperty Name="order_num" ColumnName="order_num" />
+                <ScalarProperty Name="creater" ColumnName="creater" />
+                <ScalarProperty Name="create_time" ColumnName="create_time" />
+                <ScalarProperty Name="checker" ColumnName="checker" />
+                <ScalarProperty Name="end_time" ColumnName="end_time" />
+                <ScalarProperty Name="OutIn_number" ColumnName="OutIn_number" />
+                <ScalarProperty Name="order_type_id" ColumnName="order_type_id" />
+                <ScalarProperty Name="order_state" ColumnName="order_state" />
+                <ScalarProperty Name="product_id" ColumnName="product_id" />
+                <ScalarProperty Name="total_num" ColumnName="total_num" />
+                <ScalarProperty Name="total_price" ColumnName="total_price" />
+                <ScalarProperty Name="supplier_id" ColumnName="supplier_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="order_type">
+            <EntityTypeMapping TypeName="ERPModel.order_type">
+              <MappingFragment StoreEntitySet="order_type">
+                <ScalarProperty Name="order_type_id" ColumnName="order_type_id" />
+                <ScalarProperty Name="order_type_name" ColumnName="order_type_name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="product">
+            <EntityTypeMapping TypeName="ERPModel.product">
+              <MappingFragment StoreEntitySet="product">
+                <ScalarProperty Name="product_id" ColumnName="product_id" />
+                <ScalarProperty Name="product_type_id" ColumnName="product_type_id" />
+                <ScalarProperty Name="product_name" ColumnName="product_name" />
+                <ScalarProperty Name="producer" ColumnName="producer" />
+                <ScalarProperty Name="unit" ColumnName="unit" />
+                <ScalarProperty Name="in_price" ColumnName="in_price" />
+                <ScalarProperty Name="pro_Inventory" ColumnName="pro_Inventory" />
+                <ScalarProperty Name="Shelves" ColumnName="Shelves" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="product_type">
+            <EntityTypeMapping TypeName="ERPModel.product_type">
+              <MappingFragment StoreEntitySet="product_type">
+                <ScalarProperty Name="product_type_id" ColumnName="product_type_id" />
+                <ScalarProperty Name="supplier_id" ColumnName="supplier_id" />
+                <ScalarProperty Name="product_type_name" ColumnName="product_type_name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="relation_emp_menu">
+            <EntityTypeMapping TypeName="ERPModel.relation_emp_menu">
+              <MappingFragment StoreEntitySet="relation_emp_menu">
+                <ScalarProperty Name="relation_id" ColumnName="relation_id" />
+                <ScalarProperty Name="emp_id" ColumnName="emp_id" />
+                <ScalarProperty Name="menu_id" ColumnName="menu_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="relation_role_menu">
+            <EntityTypeMapping TypeName="ERPModel.relation_role_menu">
+              <MappingFragment StoreEntitySet="relation_role_menu">
+                <ScalarProperty Name="relation_id" ColumnName="relation_id" />
+                <ScalarProperty Name="role_id" ColumnName="role_id" />
+                <ScalarProperty Name="menu_id" ColumnName="menu_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="role">
+            <EntityTypeMapping TypeName="ERPModel.role">
+              <MappingFragment StoreEntitySet="role">
+                <ScalarProperty Name="role_id" ColumnName="role_id" />
+                <ScalarProperty Name="role_name" ColumnName="role_name" />
+                <ScalarProperty Name="dep_id" ColumnName="dep_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="store">
+            <EntityTypeMapping TypeName="ERPModel.store">
+              <MappingFragment StoreEntitySet="store">
+                <ScalarProperty Name="store_id" ColumnName="store_id" />
+                <ScalarProperty Name="store_name" ColumnName="store_name" />
+                <ScalarProperty Name="address" ColumnName="address" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="store_detail">
+            <EntityTypeMapping TypeName="ERPModel.store_detail">
+              <MappingFragment StoreEntitySet="store_detail">
+                <ScalarProperty Name="detail_id" ColumnName="detail_id" />
+                <ScalarProperty Name="store_id" ColumnName="store_id" />
+                <ScalarProperty Name="product_id" ColumnName="product_id" />
+                <ScalarProperty Name="num" ColumnName="num" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="store_log">
+            <EntityTypeMapping TypeName="ERPModel.store_log">
+              <MappingFragment StoreEntitySet="store_log">
+                <ScalarProperty Name="log_id" ColumnName="log_id" />
+                <ScalarProperty Name="emp_id" ColumnName="emp_id" />
+                <ScalarProperty Name="order_id" ColumnName="order_id" />
+                <ScalarProperty Name="oper_time" ColumnName="oper_time" />
+                <ScalarProperty Name="num" ColumnName="num" />
+                <ScalarProperty Name="order_type_id" ColumnName="order_type_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="supplier">
+            <EntityTypeMapping TypeName="ERPModel.supplier">
+              <MappingFragment StoreEntitySet="supplier">
+                <ScalarProperty Name="supplier_id" ColumnName="supplier_id" />
+                <ScalarProperty Name="supplier_name" ColumnName="supplier_name" />
+                <ScalarProperty Name="address" ColumnName="address" />
+                <ScalarProperty Name="contact" ColumnName="contact" />
+                <ScalarProperty Name="tel" ColumnName="tel" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="proc_SelAll" FunctionName="ERPModel.Store.proc_SelAll">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ERPModel.proc_SelAll_Result">
+                <ScalarProperty Name="order_id" ColumnName="order_id" />
+                <ScalarProperty Name="order_num" ColumnName="order_num" />
+                <ScalarProperty Name="creater" ColumnName="creater" />
+                <ScalarProperty Name="create_time" ColumnName="create_time" />
+                <ScalarProperty Name="checker" ColumnName="checker" />
+                <ScalarProperty Name="end_time" ColumnName="end_time" />
+                <ScalarProperty Name="OutIn_number" ColumnName="OutIn_number" />
+                <ScalarProperty Name="order_type_id" ColumnName="order_type_id" />
+                <ScalarProperty Name="order_state" ColumnName="order_state" />
+                <ScalarProperty Name="product_id" ColumnName="product_id" />
+                <ScalarProperty Name="total_num" ColumnName="total_num" />
+                <ScalarProperty Name="total_price" ColumnName="total_price" />
+                <ScalarProperty Name="supplier_id" ColumnName="supplier_id" />
+                <ScalarProperty Name="emp_id" ColumnName="emp_id" />
+                <ScalarProperty Name="role_id" ColumnName="role_id" />
+                <ScalarProperty Name="emp_name" ColumnName="emp_name" />
+                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="tel" ColumnName="tel" />
+                <ScalarProperty Name="gender" ColumnName="gender" />
+                <ScalarProperty Name="address" ColumnName="address" />
+                <ScalarProperty Name="birthday" ColumnName="birthday" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="IsFrozen" ColumnName="IsFrozen" />
+                <ScalarProperty Name="product_id1" ColumnName="product_id1" />
+                <ScalarProperty Name="product_type_id" ColumnName="product_type_id" />
+                <ScalarProperty Name="product_name" ColumnName="product_name" />
+                <ScalarProperty Name="producer" ColumnName="producer" />
+                <ScalarProperty Name="unit" ColumnName="unit" />
+                <ScalarProperty Name="in_price" ColumnName="in_price" />
+                <ScalarProperty Name="pro_Inventory" ColumnName="pro_Inventory" />
+                <ScalarProperty Name="Shelves" ColumnName="Shelves" />
+                <ScalarProperty Name="order_type_id1" ColumnName="order_type_id1" />
+                <ScalarProperty Name="order_type_name" ColumnName="order_type_name" />
+                <ScalarProperty Name="supplier_id1" ColumnName="supplier_id1" />
+                <ScalarProperty Name="supplier_name" ColumnName="supplier_name" />
+                <ScalarProperty Name="address1" ColumnName="address1" />
+                <ScalarProperty Name="contact" ColumnName="contact" />
+                <ScalarProperty Name="tel1" ColumnName="tel1" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="无" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

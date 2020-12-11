@@ -1,0 +1,89 @@
+﻿@{
+    Layout = null;
+}
+<style>
+    .InfoLeft {
+        margin: 23px;
+        margin-top: 30px
+    }
+
+    .SubInfo {
+        margin-top: 30px
+    }
+</style>
+@Styles.Render("~/Content/css")
+<form class="layui-form-item layui-form InfoLeft" lay-filter="first">
+
+    <input type="hidden" name="dep_id" value="@ViewBag.dep_id">
+    <!--部门名称-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">部门名称：</label>
+        <div class="layui-input-inline">
+            <input type="text" name="dep_name" lay-verify="required" lay-reqtext="部门名称是必填项，岂能为空？" placeholder="请输入部门名称" autocomplete="off" value="@ViewBag.dep_name" class="layui-input">
+        </div>
+    </div>
+    <!--部门联系电话-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">部门电话：</label>
+        <div class="layui-input-inline">
+            <input type="tel" name="tel" lay-verify="required" lay-reqtext="部门联系电话是必填项，岂能为空？" placeholder="请输入部门联系电话" autocomplete="off" value="@ViewBag.tel" class="layui-input">
+        </div>
+    </div>
+    <!--按钮组-->
+    <div class="layui-form-item SubInfo">
+        <div class="layui-input-inline">
+            <button class="layui-btn" lay-submit lay-filter="sub">立即提交</button>
+            <button onclick="parent.layer.closeAll()" class="layui-btn layui-btn-primary">关闭</button>
+        </div>
+    </div>
+</form>
+
+@Scripts.Render("~/bundles/layui")
+<script>
+    layui.use(['form'], function () {
+         var form = layui.form,
+          layer = layui.layer,
+         $ = layui.$;
+     form.on("submit(sub)", function (obj) {
+         var DepInfo = obj.field;//表单序列化
+         console.log(DepInfo);
+         var ii = layer.load(5);//此处用layui加载动画
+            $.ajax({
+                type: "POST",
+                data: {
+                    DepInfo: DepInfo
+                },
+                url: "@Url.Action("DepEidtlInfo")",
+                success: function (result) {
+                    layer.close(ii);//成功获取数据后关闭加载动画
+                    if (result.Success) {
+                        layer.msg(result.Message, {
+                            icon: 1,
+                            time: 3000
+                        });
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        parent.DepTableInit();
+                        setTimeout(function () { layer.close(index) }, 300);//延迟
+                    }
+                    else {
+                        layer.msg(result.Message, {
+                            icon: 5,
+                            time: 1500
+                        }, function () {
+                            //parent.location.reload();
+                        });
+                    }
+                },
+                error: function (error) {
+                    layer.close(ii);//成功获取数据后关闭加载动画
+                    layer.msg(error, {
+                        icon: 5,
+                        time: 2000
+                    });
+                }
+            })
+             return false
+    })
+
+ })
+</script>

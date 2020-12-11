@@ -1,0 +1,285 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = "销售经理的销售管理";
+}
+<style>
+    .layui-table-cell .layui-form-checkbox[lay-skin="primary"] {
+        transform: translateY(20%);
+    }
+
+    .layui-table-box.layui-table-header.layui-table {
+        text-align: center
+    }
+    /*设置数据表表头字体*/
+    .layui-table th {
+        /*表头内容居中显示*/
+        text-align: center;
+    }
+</style>
+@Styles.Render("~/Content/css")
+@* 主体内容区 *@
+@* 搜索框 *@
+<div class="layui-inline" id="searchKeywordf">
+    <input type="text" autocomplete="off" id="KeyWords" name="KeyWords" placeholder="商品名称/厂商" class="layui-input">
+</div>
+<button class="layui-btn layui-btn-normal" lay-submit="" id="ProSel" data-type="getInfo">
+    <i class="layui-icon">&#xe615;</i>查询
+</button>
+@* 数据表格 *@
+<table class="layui-hide" id="ProductTable" lay-filter="jsTabel"></table>
+@* 工具栏 *@
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <div class="layui-btn layui-btn-sm" id="addpro"><i class="layui-icon">&#xe61f;</i>添加商品信息</div>
+        @*<div class="layui-btn layui-btn-sm" id="batchDel"><i class="layui-icon">&#xe640;</i>批量删除</div>*@
+    </div>
+</script>
+@* 操作列 *@
+<script type="text/html" id="tbar">
+    {{#  if(d.Shelves){ }}
+    <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="Off_shelf">
+        下架
+    </button>
+    {{#  } else{ }}
+    <button class="layui-btn layui-btn-sm  layui-btn-normal " lay-event="Shelves">
+        上架
+    </button>
+    {{#  }}}
+    <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="Replenish"> 申请补货</button>
+    @*<button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="Del"> 删除</button>*@
+</script>
+@Scripts.Render("~/bundles/layui")
+
+<script>
+        function ProTab() {
+            layui.use(['table'], function () {
+                var table = layui.table;
+                $ = layui.$,
+                    layer = layui.layer;
+                table.render({
+                    elem: '#ProductTable'
+                    , height: 482
+                    , title: '用户数据表'
+                    , url: "@Url.Action("Index")"//数据接口
+                    , page: true
+                    , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+                    , where: { keyWord: $("#keyword").val() }
+                    , cellMinWidth: 100 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+                    , cols: [[
+                        { type: 'checkbox', fixed: 'left' },
+                        {
+                            title: '序号', align: 'center', align: 'center', width: 85, templet: function (obj) {
+                                return obj.LAY_INDEX;
+                            }
+                            , fixed: 'left'
+                        },
+                        { field: 'product_name', title: '商品名称', align: 'center', width: 300 },
+                        { field: 'producer', title: '产商', align: 'center' },
+
+                        {
+                            field: 'in_price', title: '商品单价', align: 'center', templet: function (d) {
+                                return d.in_price + ' 元';
+                            } },
+                        {
+                            title: '商品库存（单位）', align: 'center', templet: function (obj) {
+                                if (obj.pro_Inventory<10) {
+                                    return obj.pro_Inventory + "  ("+ obj.unit +") "+ "<span style='color:red'>库存不足</span>";
+                                }
+                                else {
+                                    return obj.pro_Inventory + '  (' + obj.unit + ')';
+                                }
+                            }
+                        },
+                        { fixed: 'right',title: '操作', width: 180, align: 'center',toolbar: "#tbar" }
+                    ]]
+                    , skin: 'row' //表格风格
+                    , even: true
+                    ,limit:10
+                });
+                //模糊查询
+                $('#ProSel').on('click', function () {
+                    var type = $(this).data('type');
+                    active[type] ? active[type].call(this) : '';
+                });
+                //点击获取数据
+                var active = {
+                    getInfo: function () {
+                        //获取文本框的关键字的值
+                        var KeyWords = $('#KeyWords').val();
+                        if (KeyWords) {
+                            var index = layer.msg('查询中，请稍候...', { icon: 16, time: false, shade: 0 });
+                            setTimeout(function () {
+                                table.reload('ProductTable', { //表格的id
+                                    url: 'BlurSelPro',//模糊查询的数据接口（控制器中的操作方法）
+                                    page: {
+                                        curr: 1 //重新从第 1 页开始
+                                    },
+                                    where: {
+                                        KeyWords: $.trim(KeyWords)  //模糊插叙的关键字
+                                    }
+                                });
+                                layer.close(index);
+                            }, 200);
+                        } else {
+                            //回调表格渲染的方法函数
+                            ProTab();
+                        }
+                    },
+                };
+                //监听回车事件,扫描枪一扫描或者按下回车键就直接执行查询
+                $("#KeyWords").bind("keyup", function (e) {
+                    if (e.keyCode == 13) {
+                        var type = "getInfo";
+                        active[type] ? active[type].call(this) : '';
+                    }
+                });
+                //添加商品信息
+                $("#addpro").on("click", function (event) {
+                layer.open({
+                    type: 2,
+                    content: '@Url.Action("AddProduct")',
+                    title: "新增商品信息",
+                    area: ["450px", "500px"],
+                    shadeClose: true,
+                    end: function (index) {
+                        layer.close(index);
+                        // layui 关闭弹框时的回调函数
+                        window.location.reload();//刷新父页面
+                        ProTab();
+
+                    }
+                })
+                });
+                //批量删除
+                $("#batchDel").on("click", function () {
+                    var selectedobjs = table.checkStatus("ProductTable").data;
+
+                var Product_ID = selectedobjs.map(function (item) {
+                    return item.product_id;
+                });
+                    console.info(Product_ID);
+                    if (!Product_ID || Product_ID.length <= 0) {
+                        layer.msg('请选择至少一行数据！！！');
+                        return false;
+                }
+                layer.confirm("确认批量删除吗？", function () {
+                    layer.load(5, { shade: [0.5, "#5588AA"] });
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("ProDels")",
+                        data: { Product_ID: Product_ID },
+                        success: function (result) {
+                            layer.closeAll();
+                            if (result.Success) {
+                                $("#search").click();
+                                layer.msg(result.Message, { icon: 1 });
+                                ProTab();
+                            }
+                            else {
+                                layer.msg(result.Message, { icon: 5 });
+                            }
+                        }
+                    })
+                })
+                });
+
+                //操作栏按钮
+                table.on("tool(jsTabel)", function (obj) {
+                    //绑定数据表格中的按钮标记
+                    var event = obj.event;
+                    //获取数据表格中的某一行的整个对象
+                    var data = obj.data;
+                    //console.log(data);
+                    //下架商品
+                    if (event == "Off_shelf") {
+                        var product_id = data.product_id;
+                        layer.confirm("确认下架商品吗？", function () {
+                            $.ajax({
+                                type: "Post",
+                                url: "@Url.Action("Off_shelf")",
+                                data: {
+                                    product_id: product_id
+                                },
+                                success: function (result) {
+                                    layer.closeAll();
+                                    if (result.Success) {
+                                        ProTab();//刷新数据表格
+                                        layer.msg(result.Message, { icon: 1 });
+                                    }
+                                    else {
+                                        layer.msg(result.Message, { icon: 5 });
+                                    }
+                                }
+                            })
+                        })
+                    }
+                    //上架商品
+                    else if (event == "Shelves") {
+                        var product_id = data.product_id;
+                        layer.confirm("您确认商品上架吗？", function () {
+                            $.ajax({
+                                type: "Post",
+                                url: "@Url.Action("Shelves")",
+                                data: {
+                                    product_id: product_id
+                                },
+                                success: function (result) {
+                                    layer.closeAll();
+                                    if (result.Success) {
+                                        ProTab();
+                                        layer.msg(result.Message, { icon: 1 });
+                                    }
+                                    else {
+                                        layer.msg(result.Message, { icon:5 })
+                                    }
+                                }
+                            })
+                        })
+                    }
+                    //删除商品
+                    else if (event =="Del") {
+                        var product_id = data.product_id;
+                        layer.confirm("您确认删除商品吗？", function () {
+                            layer.load(5, { shade: [0.5, "#5588AA"] });
+                            $.ajax({
+                                type: "Post",
+                                url: "@Url.Action("DelPro")",
+                                data: {
+                                    product_id: product_id
+                                },
+                                success: function (result) {
+                                    layer.closeAll();
+                                    if (result.Success) {
+                                        $("#search").click();
+                                        ProTab();
+                                        layer.msg(result.Message, { icon: 1 });
+                                    }
+                                    else {
+                                        layer.msg(result.Message, { icon:5 })
+                                    }
+                                }
+                            })
+                        })
+                    }
+                    else if (event == "Replenish") {//申请补货
+                        layer.open({
+                            type: 2,
+                            content: '@Url.Action("InsBhOrder")?product_id=' + data.product_id,
+                            title: "申请商品补货",
+                            area: ["450px", "350px"],
+                            shadeClose: true,
+                            end: function (index) {
+                            layer.close(index);
+                            // layui 关闭弹框时的回调函数
+                            window.location.reload();//刷新父页面
+                            ProTab();
+
+                            }
+                        })
+                    }
+                });
+            })
+        }
+
+        ProTab();//调用函数，显示表格
+</script>

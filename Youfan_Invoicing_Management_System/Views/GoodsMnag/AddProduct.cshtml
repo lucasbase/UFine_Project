@@ -1,0 +1,171 @@
+﻿@{
+    Layout = null;
+}
+<style>
+    .InfoLeft {
+        margin: 20px;
+        margin-top: 30px
+    }
+
+    .SubInfo {
+        margin-top: 35px
+    }
+</style>
+@Styles.Render("~/Content/css")
+<form class="layui-form layui-form-pane1 InfoLeft" action="" lay-filter="first">
+    <!--供应商和商品类型二级联动-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">供应商：</label>
+        <div class="layui-input-inline">
+            <select name="supplier_id" lay-filter="parentSupplier" id="supplier_id">
+                <option value="">——请选择供应商——</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">商品类型：</label>
+        <div class="layui-input-inline">
+            <select name="product_type_id" id="product_type_id" lay-filter="Product_Type">
+                <option value="">——请选择商品类型——</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">商品名称：</label>
+        <div class="layui-input-inline">
+            <input type="text" name="product_name" lay-verify="required" placeholder="请填写商品名称" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">生产厂家：</label>
+        <div class="layui-input-inline">
+            <input type="text" name="producer" lay-verify="required" lay-reqtext="请填写生产厂家" placeholder="请输入生产厂家" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">单位：</label>
+        <div class="layui-input-inline">
+            <input type="text" name="unit" lay-verify="required" lay-reqtext="请填写单位" placeholder="如：件 | 双 | 条 等" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">单价：</label>
+        <div class="layui-input-inline">
+            <input type="text" name="in_price" lay-verify="in_price" lay-reqtext="请填写单价" placeholder="请输入单价" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item SubInfo">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="sub">立即提交</button>
+            <button onclick="parent.layer.closeAll()" class="layui-btn layui-btn-primary">关闭</button>
+        </div>
+    </div>
+
+</form>
+
+@Scripts.Render("~/bundles/layui")
+<script>
+     // 封装获取角色的函数：通过部门ID得到角色
+    function GetProductType(data) {
+            //获取到部门框中的Value部门的ID
+            var supplier_id = {
+                supplier_id: data.value
+            }
+         //再利用ajax将数据传到后端，来获取到对应下拉框选项而出现的值
+        //检查项目添加到下拉框中
+        $.ajax({
+            url: "@Url.Action("GetProductTypelist")",
+            dataType: 'json',
+            data: JSON.stringify(supplier_id),//将参数Json化，在传递给后台控制器
+            contentType: "application/json",
+            type: 'post',
+            success: function (result) {
+                console.info(result.data);
+                $("#product_type_id").empty();//清空下拉框的值
+                $.each(result.data, function (index, item) {
+                    $('#product_type_id').append(new Option(item.Text, item.Value));// 下拉菜单里添加元素
+                });
+                layui.form.render("select");//重新渲染 固定写法
+            }
+        });
+    };
+
+    layui.use(['form', 'layedit', 'laydate'], function () {
+        var form = layui.form
+        layer = layui.layer,
+            layedit = layui.layedit,
+            laydate = layui.laydate,
+            $ = layui.$;
+
+         // 得到供应商
+                $.ajax({
+                    url: "@Url.Action("GetSupplierlist")",
+                    dataType: 'json',
+                    type: 'post',
+                    success: function (result) {
+                            $.each(result.data, function (index, item) {
+                                $('#supplier_id').append(new Option(item.supplier_name, item.supplier_id));// 下拉菜单里添加元素
+                    });
+                    layui.form.render("select");//重新渲染 固定写法
+                    }
+                });
+                // 联动
+                    form.on('select(parentSupplier)', function (data) {
+                    //监听到了下拉框选择的选项，传递过来
+                    //console.info(data);
+                        GetProductType(data);
+                });
+
+        //自定义验证规则
+        form.verify({
+            in_price: [
+                /(^0\.[1-9]\d?$)|(^0\.\d[1-9]?$)|(^[1-9]\d{0,7}(\.\d{0,2})?$)/
+                , '商品单价金额的输入格式不正确,请确认!'
+            ]
+        });
+        form.on("submit(sub)", function (obj) {
+            var product = obj.field;
+            var ii = layer.load(5);//此处用layui加载动画
+            $.ajax({
+                type: "POST",
+                data: {
+                    product: product
+                },
+                url: "@Url.Action("ADD")",
+                success: function (result) {
+                    layer.close(ii);//成功获取数据后关闭加载动画
+                    if (result.Success) {
+                        layer.msg(result.Message, {
+                            icon: 1,
+                            time: 3000
+                        });
+                        //layer.msg('添加成功！', { time: 2000, icon: 1 });
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        //parent.TableInit();
+                        setTimeout(function () { layer.close(index) }, 300);//延迟
+                    }
+                    else {
+                        layer.msg(result.Message, {
+                            icon: 5,
+                            time: 1500
+                        }, function () {
+                            parent.location.reload();
+                        });
+                    }
+                }, error: function (error) {
+                    layer.close(li);//成功获取数据后关闭加载动画
+                    parent.layer.msg(error, {
+                        icon: 5,
+                        time: 2000
+                    });
+                }
+            })
+            return false
+        })
+    })
+</script>

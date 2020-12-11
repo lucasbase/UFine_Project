@@ -1,0 +1,164 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = "月度商品采购";
+}
+
+@Styles.Render("~/Content/css")
+@* 某年某月分组查询商品销售数量比例柱状图;float:right *@
+<div id="Bar" style="width: 1225px; margin-top:30px; height:500px"></div>
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/layui")
+<script src="~/Scripts/echarts.min.js"></script>
+<script type="text/javascript">
+    //某年某月分组查询商品销售金额比例柱状图
+    $(function () {
+        Bar();
+    });
+    var Year = [];	//定义数组，数组可自由定义
+    var Nums = [];
+    var Sum = [];
+    var AvgPrice = [];
+    function Bar() {
+        $.ajax({
+            url: "/Purchase_Statistics/Purchase_Data",
+            type: "post",
+            async: false,
+            dataType: "json",
+            success: function (result) {
+                //$.each方法遍历所需的数据
+                $.each(result.data, function (index, item) {
+                    Year.push(item.Dates);
+                    Nums.push(item.Nums);
+                    Sum.push(item.Sum);
+                    AvgPrice.push(item.avg)
+                });
+                //调用柱状图方法
+                InitChartMoney(Year, Nums, Sum, AvgPrice);
+            },
+            error: function (error) {
+                alert("Ajax获取服务器数据出错了！" + error);
+            }
+        });
+    }
+    //创建一个方法来封装柱状图
+    function InitChartMoney(Year, Nums, Sum, AvgPrice) {
+        // 基于准备好的dom，初始化echarts实例
+        var myChartMoney = echarts.init(document.getElementById('Bar'));//初始化echarts
+        optionMoney = {
+            title: {
+                text: '月度商品采购',//可视化主标题
+                textStyle: {//主标题的样式
+                    color: 'red',
+                    fontWeight: 'bold',
+                    fontStyle: 'italic',
+                    fontFamily: '微软雅黑'
+                },
+                subtext: '月度商品采购数量与金额对比',//副标题
+                subtextStyle: {//副标题的样式
+                    color: 'black',
+                    fontFamily: '微软雅黑'
+                },
+                x: 'center'
+            },
+            grid: {
+                top: '25%',
+            },
+            xAxis: {
+                name: '日期',
+                type: 'category',
+                data: Year,
+                axisLabel: {
+                    rotate: '35',
+                    interval: 0
+                }
+            },
+            legend: {//图例
+                data: ['月采购数量', '月采购金额', '月平均采购金额'],
+                top: '12%'
+            },
+            dataZoom: [
+                {
+                    type: 'inside'
+                }
+            ],
+            //提示框组件
+            tooltip: {
+                trigger: 'axis',//触发类型；item:数据项图形触发，主要在散点图，饼图等无类目轴的图表中使用；axis：坐标轴触发，主要在柱状图，折线图等会使用类目轴的图表中使用,
+                axisPointer: {
+                    type: 'cross',
+                    crossStyle: {
+                        color: '#999'
+                    }
+                },
+            },
+            //工具组件：如：下载保存统计图表、切换为折线图、切换为柱状图
+            toolbox: {
+                feature: {
+                    magicType: { show: true, type: ['line', 'bar'] },
+                    restore: { show: true },
+                    saveAsImage: { show: true }
+                }
+            },
+            yAxis: [
+                {
+                    type: 'value',
+                    name: '采购数据',
+                },
+                {
+                    type: 'value',
+                    name: '金额',
+                    axisLabel: {
+                        formatter: '{value} 元'
+                    }
+                }
+            ],
+            series: [{
+                name: '月采购金额',
+                data: Nums,
+                type: 'bar',//图形类型
+                label: {
+                    normal: {
+                        formatter: "{c}" + "元",//数据格式化
+                        show: true,
+                        position: 'top',//数据显示的位置，事例中显示在顶部
+                        textStyle: {//显示的数据样式
+                            color: 'black',
+                            fontFamily: '微软雅黑'
+                        }
+                    }
+                },
+            }, {
+                name: '月采购数量',
+                data: Sum,
+                type: 'bar',//图形类型
+                label: {
+                    normal: {
+                        formatter: "{c}" + "件",//数据格式化
+                        show: true,
+                        position: 'top',//数据显示的位置，事例中显示在顶部
+                        textStyle: {//显示的数据样式
+                            color: 'black',
+                            fontFamily: '微软雅黑'
+                        }
+                    }
+                },
+            },
+            {
+                name: '月平均采购金额',
+                type: 'line',
+                yAxisIndex: 1,
+                data: AvgPrice,
+                markPoint: {
+                    data: [
+                        { type: 'max', name: '最大值' },
+                        { type: 'min', name: '最小值' }
+                    ]
+                },
+            }
+
+            ]
+        };
+        // 使用刚指定的配置项和数据显示图表-绑定数据
+        myChartMoney.setOption(optionMoney);
+    }
+</script>

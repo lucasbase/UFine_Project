@@ -1,0 +1,107 @@
+﻿
+@{
+    Layout = null;
+}
+@Styles.Render("~/Content/css")
+
+
+<style>
+    .InfoLeft {
+        margin: 20px;
+        margin-top: 30px
+    }
+
+    .SubInfo {
+        margin-top: 35px
+    }
+</style>
+<div class="layui-form layui-form-pane1 InfoLeft" action="" lay-filter="first">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">商品名称</label>
+        <div class="layui-input-inline">
+            <input type="text" name="product_name" placeholder="@ViewBag.pro_name" autocomplete="off" class="layui-input" readonly="readonly">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">商品单价</label>
+        <div class="layui-input-inline">
+            <input type="text" name="in_price" placeholder="@ViewBag.pro_inprice" autocomplete="off" class="layui-input" readonly="readonly">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">申请数量</label>
+        <div class="layui-input-inline">
+            <input type="text" name="total_num" lay-verify="total_num" value="@ViewBag.pro_num" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item SubInfo">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="sub" style="margin-right:20px">立即提交</button>
+            <button onclick="parent.layer.closeAll()" class="layui-btn layui-btn-primary" style="margin-left:20px">关闭</button>
+        </div>
+    </div>
+
+</div>
+
+@Scripts.Render("~/bundles/layui")
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form
+        layer = layui.layer,
+            $ = layui.$;
+
+        //自定义验证规则
+        form.verify({
+            total_num: [
+                /^[0-9]*[1-9][0-9]{0,3}$/
+                , '请输入正确的申请数量!'
+            ]
+        });
+        form.on("submit(sub)", function (obj) {
+            var order_model = obj.field;
+            var ii = layer.load();//此处用layui加载动画
+
+
+            $.ajax({
+                type: "POST",
+                data: {
+                    order_model: order_model,
+                    order_id: @ViewBag.order_id,
+                    in_price:@ViewBag.pro_inprice,
+                },
+                url: "@Url.Action("ChangeReplenish")",
+                success: function (result) {
+                    if (result.Success) {
+                        layer.msg(result.Message, {
+                            icon: 1,
+                            time: 3000
+                        });
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        //parent.InitTable();//调用父级初始化数据表格的函数
+                        setTimeout(function () { parent.layer.close(index) }, 300);//延迟
+                    }
+                    else {
+                        layer.msg(result.Message, {
+                            icon: 5,
+                            time: 3000
+                        }, function () {
+                            parent.location.reload();
+                        });
+                    }
+                },
+                error: function (error) {
+                    layer.close(ii);//成功获取数据后关闭加载动画
+                    layer.msg(error, {
+                        icon: 5,
+                        time: 2000
+                    });
+                }
+            });
+        })
+    })
+
+</script>

@@ -1,0 +1,395 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="icon" href="~/Content/assets/images/优梵logo第一版 (7).png">
+    <title>优梵进销存管理系统</title>
+    @Styles.Render("~/Content/css")
+    <link href="~/Content/assets/css/admin.css" rel="stylesheet" />
+    @*引用阿里巴巴矢量图库*@
+    <link href="~/Content/assets/css/modules/layui-icon-extend/layui-icon-extend/iconfont.css" rel="stylesheet" />
+    <style>
+        .iframe {
+            max-height: 540px;
+        }
+
+        /**右键菜单*/
+        .rightmenu {
+            position: absolute;
+            width: 110px;
+            z-index: 9999;
+            display: none;
+            background-color: #fff;
+            padding: 2px;
+            color: #333;
+            border: 1px solid #eee;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+            .rightmenu li {
+                text-align: center;
+                display: block;
+                height: 30px;
+                line-height: 32px;
+            }
+
+                .rightmenu li:hover {
+                    background-color: #666;
+                    color: #fff;
+                }
+    </style>
+</head>
+<body class="layui-layout-body">
+    <div class="layui-layout layui-layout-admin">
+        <div class="layui-header custom-header">
+            <!-- 头部区域（可配合layui已有的水平导航） -->
+            <ul class="layui-nav layui-layout-left">
+                <li class="layui-nav-item slide-sidebar" lay-unselect>
+                    <a href="javascript:;" class="icon-font"><i class="ai ai-menufold"></i></a>
+                </li>
+            </ul>
+
+            <ul class="layui-nav layui-layout-right">
+                <li class="layui-nav-item">
+                    <a href="javascript:;">@Session["emp_name"]</a>
+                    <dl class="layui-nav-child">
+                        @*<dd><a href="">帮助中心</a></dd>*@
+                        
+                        <dd><a href="/Login/LoginOut" class="layui-btn layui-btn-primary layui-btn-lg" lay-event="del">退出</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+
+        <div class="layui-side custom-admin">
+            <div class="layui-side-scroll">
+                <div class="custom-logo">
+                    <img src="~/Content/assets/images/优梵logo第一版 (8).png" alt="" />
+                    @*<img src="~/Content/assets/images/logo.png" alt="" />*@
+                    <h1>优梵进销存管理系统</h1>
+                </div>
+                <ul id="Nav" class="layui-nav layui-nav-tree" lay-filter="test" target="_slef">
+                    @* 左侧菜单栏 *@
+                </ul>
+            </div>
+        </div>
+        <!--主体内容-->
+        <div class="layui-body">
+            <!-- 动态选项卡 layui-tab-card custom-tab-->
+            <!--选项卡-->
+            <div class="layui-tab layui-tab-card layui-tab-brief" lay-allowClose="true" lay-filter="demo">
+                <ul class="layui-tab-title" id="main_tab1">
+                    <li class="layui-this" lay-id="1"><span><i class="layui-icon">&#xe638;</i>欢迎页</span></li>
+                </ul>
+                <ul class="rightmenu">
+                    <li data-type="closethis">关闭当前</li>
+                    <li data-type="closeall">关闭所有</li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        @*<iframe id="iframe" src="https://www.ike7.com/Demo/5/50/demo/welcome.html" frameborder="0"></iframe>*@
+                        @RenderBody()
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--页脚团队声明-->
+        <div class="layui-footer">
+            <div class="layui-main">
+                <p>© 2020 刘锦凌、周婷立、戴铖开发团队出品</p>
+            </div>
+        </div>
+
+        <div class="mobile-mask"></div>
+    </div>
+    <script src="~/Scripts/jquery-3.5.1.js"></script>
+    @Scripts.Render("~/bundles/layui")
+    @RenderSection("scripts", required: false)
+    <script data-main="home">
+        //var username = document.getElementById('user').value
+        //主题模板的Index.js
+        layui.define(['element', 'layer'], function (exports) {
+
+            var $ = layui.$, $body = $('body'),
+                element = layui.element,
+                layer = layui.layer;
+
+            var screen_size = {
+                pc: [991, -1],
+                pad: [768, 990],
+                mobile: [0, 767]
+            }
+
+            var getDevice = function () {
+                var width = $(window).width();
+                for (var i in screen_size) {
+                    var sizes = screen_size[i],
+                        min = sizes[0],
+                        max = sizes[1];
+                    if (max == -1) max = width;
+                    if (min <= width && max >= width) {
+                        return i;
+                    }
+                }
+                return null;
+            }
+
+            var isDevice = function (label) {
+                return getDevice() == label;
+            }
+
+            var isMobile = function () {
+                return isDevice('mobile');
+            }
+
+            var Tab = function (el) {
+                this.el = el;
+                this.urls = [];
+            }
+
+            Tab.prototype.content = function (src) {
+                var iframe = document.createElement("iframe");
+                iframe.setAttribute("frameborder", "0");
+                iframe.setAttribute("src", src);
+                iframe.setAttribute("data-id", this.urls.length);
+                return iframe.outerHTML;
+            };
+
+            Tab.prototype.is = function (url) {
+                return (this.urls.indexOf(url) !== -1)
+            };
+
+            Tab.prototype.add = function (title, url) {
+                if (this.is(url)) return false;
+                this.urls.push(url);
+                element.tabAdd(this.el, {
+                    title: title
+                    , content: this.content(url)
+                    , id: url
+                });
+                this.change(url);
+            };
+
+            Tab.prototype.change = function (url) {
+                element.tabChange(this.el, url);
+            };
+
+            Tab.prototype.delete = function (url) {
+                element.tabDelete(this.el, url);
+            };
+
+            Tab.prototype.onChange = function (callback) {
+                element.on('tab(' + this.el + ')', callback);
+            };
+
+            Tab.prototype.onDelete = function (callback) {
+                var self = this;
+                element.on('tabDelete(' + this.el + ')', function (data) {
+                    var i = data.index;
+                    self.urls.splice(i, 1);
+                    callback && callback(data);
+                });
+            };
+
+
+
+
+            var Home = function () {
+
+                var tabs = new Tab('tabs'), navItems = [];
+
+                $('#Nav a').on('click', function (event) {
+                    event.preventDefault();
+                    var $this = $(this), url = $this.attr('href'),
+                        title = $.trim($this.text());
+                    if (url && url !== 'javascript:;') {
+                        if (tabs.is(url)) {
+                            tabs.change(url);
+                        } else {
+                            navItems.push($this);
+                            tabs.add(title, url);
+                        }
+                    }
+                    $this.closest('li.layui-nav-item')
+                        .addClass('layui-nav-itemed')
+                        .siblings()
+                        .removeClass('layui-nav-itemed');
+                });
+
+                // 默认触发第一个子菜单的点击事件
+                //$('#Nav li.layui-nav-item:eq(0) > dl.layui-nav-child > dd > a:eq(0)').trigger('click');
+
+                tabs.onChange(function (data) {
+                    var i = data.index, $this = navItems[i];
+                    if ($this && typeof $this === 'object') {
+                        $('#Nav dd').removeClass('layui-this');
+                        $this.parent('dd').addClass('layui-this');
+                        $this.closest('li.layui-nav-item')
+                            .addClass('layui-nav-itemed')
+                            .siblings()
+                            .removeClass('layui-nav-itemed');
+                    }
+                });
+
+                tabs.onDelete(function (data) {
+                    var i = data.index;
+                    navItems.splice(i, 1);
+                });
+
+                this.slideSideBar();
+            }
+
+            Home.prototype.slideSideBar = function () {
+                var $slideSidebar = $('.slide-sidebar'),
+                    $pageContainer = $('.layui-body'),
+                    $mobileMask = $('.mobile-mask');
+
+                var isFold = false;
+                $slideSidebar.click(function (e) {
+                    e.preventDefault();
+                    var $this = $(this), $icon = $this.find('i'),
+                        $admin = $body.find('.layui-layout-admin');
+                    var toggleClass = isMobile() ? 'fold-side-bar-xs' : 'fold-side-bar';
+                    if ($icon.hasClass('ai-menufold')) {
+                        $icon.removeClass('ai-menufold').addClass('ai-menuunfold');
+                        $admin.addClass(toggleClass);
+                        isFold = true;
+                        if (isMobile()) $mobileMask.show();
+                    } else {
+                        $icon.removeClass('ai-menuunfold').addClass('ai-menufold');
+                        $admin.removeClass(toggleClass);
+                        isFold = false;
+                        if (isMobile()) $mobileMask.hide();
+                    }
+                });
+
+                var tipIndex;
+                // 菜单收起后的模块信息小提示
+                $('#Nav li > a').hover(function () {
+                    var $this = $(this);
+                    if (isFold) {
+                        tipIndex = layer.tips($this.find('em').text(), $this);
+                    }
+                }, function () {
+                    if (isFold && tipIndex) {
+                        layer.close(tipIndex);
+                        tipIndex = null
+                    }
+                })
+
+                if (isMobile()) {
+                    $mobileMask.click(function () {
+                        $slideSidebar.trigger('click');
+                    });
+                }
+            }
+
+            exports('home', new Home);
+        });
+        //菜单循环遍历打印拼接操作
+        $(function () {
+            $.ajax({
+                url: "/Menu/GetMenuList",
+                type: "get",
+                async: false,
+                data: { username: "@Session["username"]" },
+                dataType: "json",
+                success: function (data) {
+                    console.log(data);
+                    var menu = ""; //定义变量存储
+                    for (var i = 0; i < data.length; i++) {
+                        menu += "<li class='layui-nav-item '>"
+                        if (data[i].parent_menu_id == 0) {
+                            //取出父元素的菜单，拼进页面
+                            menu += "<a href='javascript:;'><i class='iconfont'>" + data[i].icon + "</i>" + data[i].name + "</a>"
+                            //取出这个父元素所对应的子元素
+                            menu += "<dl class='layui-nav-child' >"
+                            for (var j = 0; j < data.length; j++) {
+                                //继续遍历这几条数据
+                                if (data[j].parent_menu_id == data[i].menu_id) {
+                                    //menu += "<dl class='layui-nav-child'>"
+                                    menu += "<dd>"
+                                    menu += "<a href='javascript:;' data-title='" + data[j].name + "' data-type='tabAdd'  data-url=" + data[j].url + " class='site-demo-active' data-id=" + data[j].menu_id + ">" + '&nbsp;&nbsp;&nbsp;' + data[j].name + "</a>"
+                                    menu += "</dd>"
+                                }
+                            }
+                            menu += "</dl>"
+                        }
+                        menu += "</li>";
+                    }
+                    $("#Nav").html(menu);
+                    $("#Nav li:eq(1)").removeClass("layui-nav-item").addClass("layui-nav-item layui-nav-itemed");
+            //JavaScript代码区域
+                    layui.use(['element', 'layer', 'jquery'], function () {
+                        var element = layui.element;
+                        // var layer = layui.layer;
+                        var $ = layui.$;
+                        // 配置tab实践在下面无法获取到菜单元素
+                        $('.site-demo-active').on('click', function () {
+                            var dataid = $(this);
+                            //这时会判断右侧.layui-tab-title属性下的有lay-id属性的li的数目，即已经打开的tab项数目
+                            if ($(".layui-tab-title li[lay-id]").length <= 0) {
+                                //如果比零小，则直接打开新的tab项
+                                active.tabAdd(dataid.attr("data-url"), dataid.attr("data-id"), dataid.attr("data-title"));
+                            } else {
+                                //否则判断该tab项是否以及存在
+                                var isData = false; //初始化一个标志，为false说明未打开该tab项 为true则说明已有
+                                $.each($(".layui-tab-title li[lay-id]"), function () {
+                                    //如果点击左侧菜单栏所传入的id 在右侧tab项中的lay-id属性可以找到，则说明该tab项已经打开
+                                    if ($(this).attr("lay-id") == dataid.attr("data-id")) {
+                                        isData = true;
+                                    }
+                                })
+                                if (isData == false) {
+                                    //标志为false 新增一个tab项
+                                    active.tabAdd(dataid.attr("data-url"), dataid.attr("data-id"), dataid.attr("data-title"));
+                                }
+                            }
+                            //最后不管是否新增tab，最后都转到要打开的选项页面上
+                            active.tabChange(dataid.attr("data-id"));
+                        });
+
+                        //监听tab选项卡的切换/点击事件，刷新该tab选项卡中的页面
+                        element.on('tab(demo)', function (data) {
+                            var src = $(".layui-tab-item.layui-show").find("iframe").attr("src");
+                            $(".layui-tab-item.layui-show").find("iframe").attr("src", src);
+                        });
+
+                        var active = {
+                            //在这里给active绑定几项事件，后面可通过active调用这些事件
+                            tabAdd: function (url, id, name) {
+                                //新增一个Tab项 传入三个参数，分别对应其标题，tab页面的地址，还有一个规定的id，是标签中data-id的属性值
+                                //关于tabAdd的方法所传入的参数可看layui的开发文档中基础方法部分
+                                element.tabAdd('demo', {
+                                    title: name,
+                                    content: '<iframe data-frameid="' + id + '" class="iframe" scrolling="auto" frameborder="0" src="' + url + '" style="width:100%;height:100%;"></iframe>',
+                                    id: id //规定好的id
+                                })
+                                FrameWH(); //计算ifram层的大小
+                            },
+                            tabChange: function (id) {
+                                //切换到指定Tab项
+                                element.tabChange('demo', id); //根据传入的id传入到指定的tab项
+                            },
+                            tabDelete: function (id) {
+                                element.tabDelete("demo", id);//删除
+                            }
+                        };
+                        function FrameWH() {
+                            var h = $(window).height();
+                            $("iframe").css("height", h + "px");
+                        }
+                    });
+                }
+            });
+        })
+
+    </script>
+</body>
+</html>

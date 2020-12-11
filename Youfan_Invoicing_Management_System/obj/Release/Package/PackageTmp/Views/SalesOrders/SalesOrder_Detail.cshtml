@@ -1,0 +1,72 @@
+﻿
+@{
+    Layout = null;
+}
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>销售单详情</title>
+    <link href="~/Content/assets/css/layui.css" rel="stylesheet" />
+</head>
+<body>
+    <div>
+        <table class="layui-table">
+            <tr>
+                <td><strong>销售单号</strong></td>
+                <td>@ViewBag.Order_Num</td>
+                <td><strong>订单创建人</strong></td>
+                <td>@ViewBag.Creater</td>
+                <td><strong>创建时间</strong></td>
+                <td>@ViewBag.Create_Time</td>
+                
+            </tr>
+            <tr>
+                <td><strong>出库单号</strong></td>
+                <td>@ViewBag.OutIn_Number</td>
+                <td><strong>订单审核人</strong></td>
+                <td>@ViewBag.Checker</td>
+                <td><strong>状态</strong></td>
+                @if (@ViewBag.Order_State == "已审核")
+                {
+                    <td colspan="2" style="color:green">@ViewBag.Order_State</td>
+                }
+                else
+                {
+                    <td colspan="2" style="color:red">@ViewBag.Order_State</td>
+                }
+            </tr>
+            @*<tr>
+                <td><strong>供应商编号</strong></td>
+                <td>@ViewBag.Supplier_ID</td>
+                <td><strong>供应商名称</strong></td>
+                <td>@ViewBag.Product_Name</td>
+                <td><strong>联系人</strong></td>
+                <td>@ViewBag.Contact</td>
+            </tr>*@
+        </table>
+        <table class="layui-table" id="tabInfo">
+            <thead>
+                <tr>
+                    <th>产品名称</th>
+                    <th>产品编号</th>
+                    <th>单价</th>
+                    <th>总价</th>
+                    <th>数量</th>
+                    <th>单位</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@ViewBag.Product_Name</td>
+                    <td>@ViewBag.Product_ID</td>
+                    <td>@ViewBag.In_Price</td>
+                    <td>@ViewBag.Total_Price</td>
+                    <td>@ViewBag.Total_Num</td>
+                    <td>@ViewBag.Unit</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

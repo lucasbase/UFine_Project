@@ -1,0 +1,69 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = "角色管理";
+}
+<style>
+    .layui-table-cell .layui-form-checkbox[lay-skin="primary"] {
+        transform: translateY(20%);
+    }
+
+    .layui-table-box.layui-table-header.layui-table {
+        text-align: center
+    }
+    /*设置数据表表头字体*/
+    .layui-table tr th {
+        /*表头内容居中显示*/
+        text-align: center;
+    }
+</style>
+@Styles.Render("~/Content/css")
+
+@* 搜索框 *@
+<div class="layui-inline">
+    <div class="layui-inline" id="searchKeywordf">
+        <input type="text" autocomplete="off" id="KeyWords" style="width:200px" name="KeyWords" placeholder="部门名称/角色名称" class="layui-input">
+    </div>
+</div>
+<button class="layui-btn layui-btn-normal" lay-submit="" id="search" data-type="getInfo"><i class="layui-icon">&#xe615;</i>查询</button>
+@* LayUI数据表格 *@
+<table class="layui-hide" id="RoleTable" lay-filter="jsTabel"></table>
+@Scripts.Render("~/bundles/layui")
+<script type="text/javascript">
+    function TableInit() {
+
+        layui.use(['table', 'laydate'], function () {
+            var table = layui.table;
+            $ = layui.$,
+                layer = layui.layer;
+            var laydate = layui.laydate;
+
+            //数据表格渲染
+            table.render({
+                elem: '#RoleTable'
+                , height: 482
+                , title: '角色数据表'
+                , url: "@Url.Action("Role_Index_Info")"//数据接口
+                , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+                , cellMinWidth: 180 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+                , cols: [[
+                    { type: 'checkbox', fixed: 'left' },
+                    {
+                        title: '序号', width: 80, align: 'center', templet: function (obj) {
+                            return obj.LAY_INDEX;
+                        }
+                        , fixed: 'left'
+                    },
+                    { field: 'Role_ID', title: '角色编号', align: 'center', fixed: 'left' },
+                    { field: 'Dep_Name', title: '所属部门名称', align: 'center' },
+                    { field: 'Role_Name', title: '角色名', align: 'center' },
+                    { title: '操作', fixed: 'right', width: 260, align: 'center', toolbar: "#tbar" }
+                ]]
+                , page: true
+                , skin: 'row' //表格风格
+                , even: true
+                , limit: 10
+            });
+        })
+    }
+    TableInit();
+</script>

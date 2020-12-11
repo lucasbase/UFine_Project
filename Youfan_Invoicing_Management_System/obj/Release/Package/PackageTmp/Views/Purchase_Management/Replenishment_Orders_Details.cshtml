@@ -1,0 +1,82 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>补货单详情</title>
+    <link href="~/Content/assets/css/layui.css" rel="stylesheet" />
+    <style>
+        .layui-table-cell .layui-form-checkbox[lay-skin="primary"] {
+            transform: translateY(20%);
+        }
+
+        .layui-table-box.layui-table-header.layui-table {
+            text-align: center
+        }
+        /*设置数据表表头字体*/
+        .layui-table th {
+            /*表头内容居中显示*/
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <table class="layui-table">
+            <tr>
+                <td><strong>补货单号</strong></td>
+                <td colspan="2">@ViewBag.Order_Num</td>
+                <td><strong>状态</strong></td>
+                @if (@ViewBag.Order_State == "审核通过")
+                {
+                    <td colspan="2" style="color:green">@ViewBag.Order_State</td>
+                }
+                else
+                {
+                    <td colspan="2" style="color:red">@ViewBag.Order_State</td>
+                }
+            </tr>
+            <tr>
+                <td><strong>订单创建人</strong></td>
+                <td>@ViewBag.Creater</td>
+                <td><strong>创建时间</strong></td>
+                <td>@ViewBag.Create_Time</td>
+                <td><strong>订单审核人</strong></td>
+                <td>@ViewBag.Checker</td>
+            </tr>
+            <tr>
+                <td><strong>供应商编号</strong></td>
+                <td>@ViewBag.Supplier_ID</td>
+                <td><strong>供应商名称</strong></td>
+                <td>@ViewBag.Supplier_Name</td>
+                <td><strong>联系人</strong></td>
+                <td>@ViewBag.Contact</td>
+            </tr>
+        </table>
+        <table class="layui-table" id="tabInfo">
+            <thead>
+                <tr>
+                    <th>补货商品名称</th>
+                    <th>产品编号</th>
+                    <th>补货商品单价</th>
+                    <th>补货商品总价</th>
+                    <th>入库数</th>
+                    <th>商品规格</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@ViewBag.Product_Name</td>
+                    <td>@ViewBag.Product_ID</td>
+                    <td>@ViewBag.Unit_Price 元</td>
+                    <td>@ViewBag.Total_Price 元</td>
+                    <td>@ViewBag.Total_Num</td>
+                    <td>@ViewBag.Unit</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

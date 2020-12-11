@@ -1,0 +1,105 @@
+﻿
+@{
+    Layout = null;
+    ViewBag.Title = "员工权限修改";
+}
+
+@Styles.Render("~/Content/css")
+<input type="hidden" name="emp_id" id="emp_id" value="@ViewBag.emp_id">
+@* 权限菜单 *@
+<div class="layui-form-item">
+    <div style="height: 550px;overflow: auto;margin:0 auto">
+        <ul id="demoTree" class="dtree" data-id="0"></ul>
+    </div>
+</div>
+<div class="layui-form-item" style="margin-left:70px">
+    <div class="layui-input-block">
+        <button class="layui-btn" id="checkbarTreea_btna" lay-submit lay-filter="formStep2">
+            &emsp;确认修改&emsp;
+        </button>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/layui")
+<script src="~/Scripts/jquery-3.5.1.js"></script>
+<script>
+    var Emp_ID = $("#emp_id").val();
+    console.log(Emp_ID);
+    layui.extend({
+        dtree: '{/}/Content/assets/dtree/dtree'   // {/}的意思即代表采用自有路径，即不跟随 base 路径
+    }).use(['dtree', 'layer', 'jquery'], function () {
+        var dtree = layui.dtree, layer = layui.layer, $ = layui.jquery;
+        dtree.render({
+            elem: "#demoTree",
+            url: "/Menu/GetMenuListTree",//GetMenuListTrees
+            dataStyle: "layuiStyle",  //使用layui风格的数据格式
+            dataFormat: "list",  //配置data的风格为list
+            checkbarType: "all", // 默认就是all，其他的值为： no-all  p-casc   self  only
+            response: { message: "操作成功", statusCode: 0 },  //修改response中返回数据的定义
+            checkbarData: "halfChoose", // 记录选中（默认）， "change"：记录变更， "all"：记录全部， "halfChoose"："记录选中和半选（V2.5.0新增）"
+            checkbar: true, //开启复选框
+            done: function (res, $ul, first) {
+                $('#demoTree').change();  // 一定要加上这句！！！不然没有回调！！！
+                $.ajax({
+                    type: "get",
+                    url: "/Emp_Management/GetEmpMenuList?emp_id=" + Emp_ID,
+                    success: function (result) {
+                        var MenuID = [];//某个员工所对应的菜单ID
+                        var MenuIDS = [];//接收某个员工所对应的菜单ID
+                        //循环获取菜单ID
+                        $.each(result.data, function (index, item) {//某个员工所对应的菜单
+                            MenuID.push(item.id); //获取对应的value
+                        });
+                        for (var i = 1; i <= MenuID.length; i++) {
+                            MenuIDS[i] = MenuID[i]
+                        }
+                        var ID = JSON.stringify(MenuIDS);//将数据Json化
+            // 多级复选框
+                        dtree.chooseDataInit("demoTree", ID);
+                        // 反选半选状态
+                        dtree.initNoAllCheck("demoTree");
+                    }
+                });
+            }
+
+        });
+        $("#checkbarTreea_btna").click(function () {
+            var MenuIDList = [];
+            var params = dtree.getCheckbarNodesParam("demoTree");
+            console.log(params);
+            $.each(params, function (index, item) {
+                MenuIDList.push(item.nodeId); //获取对应的value
+            });
+            $.ajax({
+                type: "POST",
+                data: {
+                    MenuIDList: MenuIDList,
+                    emp_id: Emp_ID
+                },
+                url: "/Emp_Management/EmpSubAuthority",
+                success: function (result)
+                {
+                    if (result.Success) {
+                        layer.msg(result.Message, {
+                            icon: 1,
+                            time: 2500
+                        });
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        setTimeout(function () { parent.layer.close(index) }, 300);//延迟
+                    }
+                    else {
+                        layer.msg(result.Message, {
+                            icon: 5,
+                            time: 2000
+                        }, function () {
+                           location.reload();
+                        });
+                    }
+                    //parent.TableInit();
+                }
+            });
+            console.log(MenuIDList);
+        });
+
+    });
+</script>

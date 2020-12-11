@@ -1,0 +1,243 @@
+﻿@{
+    ViewBag.Title = "采购经理采购单管理页面";
+    Layout = null;
+}
+<style>
+    .layui-table-cell .layui-form-checkbox[lay-skin="primary"] {
+        transform: translateY(20%);
+    }
+
+    .layui-table-box.layui-table-header.layui-table {
+        text-align: center
+    }
+
+    /*设置数据表表头字体*/
+    .layui-table tr th {
+        /*表头内容居中显示*/
+        text-align: center;
+    }
+</style>
+@Styles.Render("~/Content/css")
+@* 搜索框 *@
+<div class="layui-inline">
+    <div class="layui-inline" id="searchKeywordf">
+        <input type="text" autocomplete="off" id="KeyWords" name="KeyWords"  style="width:200px" placeholder="订单号/创建人/商品名称" class="layui-input">
+    </div>
+    &nbsp;
+    &nbsp;
+    <div class="layui-input-inline">
+        <input type="text" name="date" id="date" autocomplete="off" style="width:200px" readonly="readonly" placeholder="请选择日期......" class="layui-input">
+    </div>
+</div>
+<button class="layui-btn layui-btn-normal" lay-submit="" id="search" data-type="getInfo"><i class="layui-icon">&#xe615;</i>查询</button>
+@* LayUI数据表格 *@
+<table class="layui-hide" id="Purchase_Manager_Table" lay-filter="jsTabel"></table>
+@* 工具 *@
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        @*<div class="layui-btn layui-btn-sm" id="PurchaseBatchDel"><i class="layui-icon">&#xe640;</i>批量删除</div>*@
+    </div>
+</script>
+<script type="text/html" id="tbar">
+    <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="Details"><i class="layui-icon">&#xe642;</i>详情</button>
+    <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="Del"><i class="layui-icon">&#xe640;</i>删除</button>
+</script>
+@Scripts.Render("~/bundles/layui")
+<script src="~/Content/FormatTime.js"></script>
+
+<script type="text/javascript">
+        //封装数据表格函数
+        function PurchaseManagerTableInit() {
+        //LayUI数据表格渲染
+            layui.use(['table', 'laydate'], function () {
+                var table = layui.table;
+                laydate = layui.laydate;
+                $ = layui.$,
+                    layer = layui.layer;
+                //日期
+                laydate.render({
+                    elem: '#date'
+                });
+                //数据表格渲染
+                table.render({
+                    elem: '#Purchase_Manager_Table'
+                    , height: 482
+                    , title: "采购单数据表"
+                    , url: "@Url.Action("Purchase_Orders_Management")"//数据接口
+                    , page: true
+                    , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+                    , cellMinWidth: 100 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+                    , cols: [[
+                        { type: 'checkbox', fixed: 'left' },
+                        {
+                            title: '序号', width: 80, align: 'center', templet: function (obj) {
+                                return obj.LAY_INDEX;
+                            }
+                            , fixed: 'left'
+                        },
+                        { field: 'Order_Num', title: '采购单号', align: 'center', fixed: 'left', width: 164 },
+                        { field: 'Creater', title: '订单创建人', align: 'center', width: 110 },
+                        {
+                            field: 'Create_Time', align: 'center', title: '订单创建时间',
+                            templet: function (d) {
+                                return formatTime(d.Create_Time);
+                            }, width: 164,
+                        },
+                        { field: 'OutIn_Number', title: '入库单号', align: 'center', width: 164 },
+                        {
+                            field: 'Order_State', title: '订单状态', align: 'center', width: 115, templet: function (obj) {
+                                if (obj.Order_State) {
+                                    return "<span style='color:green'>已入库</span>";
+                                }
+                                else {
+                                    return "<span style='color:red'>等待入库</span>";
+                                }
+                            }
+                        },
+                        { field: 'Product_Name', title: '商品名称', align: 'center', width: 110 },
+                        { field: 'Total_Num', title: '总数', align: 'center', width: 90 },
+                        { field: 'Total_Price', title: '总价(元)', align: 'center', width: 100 },
+                        { fixed: 'right',title: '操作', width: 180, align: 'center', toolbar: "#tbar" }
+                    ]]
+                    , even: true
+                    , skin: 'row' //表格风格
+                    , limit: 10
+                })
+            //模糊查询方法
+            $(document).on('click', '#search', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+            //点击获取数据
+            var active = {
+                getInfo: function () {
+                    //获取文本框的关键字的值
+                    var KeyWords = $('#KeyWords').val();
+                    var dateInfo = $('#date').val();
+                    if (KeyWords) {
+                        SelectInfo(KeyWords, dateInfo);
+                    } else {
+                        //回调表格渲染的方法函数
+                        //PurchaseManagerTableInit();
+                        SelectInfo(KeyWords, dateInfo);
+                    }
+                },
+                };
+
+
+                //查询的方法
+                function SelectInfo(KeyWords, dateInfo) {
+                    var index = layer.msg('查询中，请稍候...', { icon: 16, time: false, shade: 0 });
+                    setTimeout(function () {
+                        table.reload('Purchase_Manager_Table', { //表格的id
+                            url: 'Seach_KeyWords_Manag',//模糊查询的数据接口（控制器中的操作方法）
+                            page: {
+                                curr: 1 //重新从第 1 页开始
+                            },
+                            where: {
+                                KeyWords: $.trim(KeyWords),  //模糊插叙的关键字
+                                dateInfo: $.trim(dateInfo)  //模糊插叙的关键字
+                            }
+                        });
+                        layer.close(index);
+                    }, 200);
+                }
+
+            //监听回车事件,扫描枪一扫描或者按下回车键就直接执行查询
+            $("#KeyWords").bind("keyup", function (e) {
+                if (e.keyCode == 13) {
+                    var type = "getInfo";
+                    active[type] ? active[type].call(this) : '';
+                }
+            });
+
+            //批量删除按钮
+            $(document).on("click", "#PurchaseBatchDel", function () {
+                //获取LayUI数据表格中的所有数据
+                    var selectedobjs = table.checkStatus("Purchase_Manager_Table").data;
+                console.log(selectedobjs);
+
+                //循环遍历表格中的员工ID
+                    var Purchase_Orders= selectedobjs.map(function (item) {
+                    return item.Order_ID;
+                })
+                    console.info(Purchase_Orders);
+                //判断是否选中了一行
+                    if (!Purchase_Orders || Purchase_Orders.length <= 0) {
+                    layer.msg('请选择至少一行数据！！！');
+                    return false;
+                }
+                //弹框确认
+                layer.confirm("确认批量删除吗？", function () {
+                    layer.load(5, { shade: [0.5, "#5588AA"] });
+                      $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("BatchDelEmps")",
+                          data: { Purchase_Orders: Purchase_Orders },
+                        success: function (result) {
+                            layer.closeAll();
+                            if (result.Success) {
+                                PurchaseManagerTableInit();
+                                layer.msg(result.Message, {icon:1});
+                            }
+                            else
+                            {
+                                layer.msg(result.Message, { icon:5 });
+                            }
+                        }
+                    })
+                })
+            })
+
+             //数据表格中的修改、删除、冻结与解冻按钮
+            table.on("tool(jsTabel)", function (obj) {
+                //绑定数据表格中的按钮标记
+                var event = obj.event;
+                //获取数据表格中的某一行的整个对象
+                var data = obj.data;
+                console.log(data);
+                if (event == "Details") {
+                    layer.open({
+                        type: 2,
+                        content: '@Url.Action("Purchase_Orders_Details")?order_id=' + data.Order_ID,
+                        title: "采购单详情",
+                        btn: ['关闭'], //可以无限个按钮
+                        shadeClose: true,
+                        area: ["900px", "400px"],
+                        //end: function () {
+                        //    location.reload();
+                        //    // layui 关闭弹框时的回调函数
+                        //    PurchaseManagerTableInit();
+                        //}
+                    })
+                } else if (event == "Del") {
+                    if (data.Order_State == true) {
+                        layer.msg(Message = "订单已审核，不能删除订单！", { icon: 5 });
+                    } else {
+                        var Order_ID = data.Order_ID;
+                        layer.confirm("确认删除吗？", function () {
+                            layer.load(5, { shade: [0.5, "#5588AA"] });
+                            $.ajax({
+                                type: "POST",
+                                url: "@Url.Action("Del_Purchase_Orders")",
+                                data: { Order_ID: Order_ID },
+                                success: function (result) {
+                                    layer.closeAll();
+                                    if (result.Success) {
+                                        PurchaseManagerTableInit();//刷新数据表格
+                                        layer.msg(result.Message, { icon: 1 });
+                                    }
+                                    else {
+                                        layer.msg(result.Message, { icon: 5 });
+                                    }
+                                }
+                            })
+                        })
+                    }
+                }
+            })
+            })
+
+    }
+    PurchaseManagerTableInit();
+</script>
